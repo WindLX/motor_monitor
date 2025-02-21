@@ -1,0 +1,5 @@
+{
+    "base_url": "http://localhost:8000",
+    "ip": "localhost",
+    "port": 9999
+}
