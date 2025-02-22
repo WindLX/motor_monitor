@@ -15,8 +15,10 @@ class MotorBitCommand:
 
 
 class MotorBit:
-    HEADER_FORMAT: str = "!BH"  # 1 byte for header, 2 bytes for length
-    POSITION_FORMAT: str = "!BQ"  # 1 byte for motor id, 8 bytes for position (float)
+    HEADER_FORMAT: str = "!B"  # 1 byte for header
+    LENGTH_FORMAT: str = "!B"  # 1 byte for array length
+    POSITION_FORMAT: str = "!BQ"  # 1 byte for motor id, 8 bytes for position (int)
+    FIXED_LENGTH: int = 146  # Fixed length for the message
 
     @staticmethod
     def from_base_model(message: MotorMessage) -> bytes:
@@ -26,15 +28,19 @@ class MotorBit:
             MotorBitCommand.CENTER,
             MotorBitCommand.STOP,
         ]:
-            header: int = (1 << 4) | message.command.command
-            length: int = 3  # 1 byte for header + 2 bytes for length
-            return struct.pack(MotorBit.HEADER_FORMAT, header, length)
+            header: int = message.command.command
+            data: bytes = struct.pack(MotorBit.HEADER_FORMAT, header)
+            return data.ljust(MotorBit.FIXED_LENGTH, b"\x00")
         elif (
             message.command.command == MotorBitCommand.SET_POSITION
             and message.data is not None
         ):
-            header: int = (2 << 4) | message.command.command
-            data: bytes = b""
+            header: int = message.command.command
+            array_length: int = len(message.data)
+            if array_length > 16:
+                raise ValueError("Array length cannot exceed 16")
+            data: bytes = struct.pack(MotorBit.HEADER_FORMAT, header)
+            data += struct.pack(MotorBit.LENGTH_FORMAT, array_length)
             for motor in message.data:
                 motor_id = motor.motor_id
                 position = motor.position
@@ -43,20 +49,15 @@ class MotorBit:
                     motor_id,
                     struct.unpack("!Q", struct.pack("!d", position))[0],
                 )
-            length: int = 3 + len(
-                data
-            )  # 1 byte for header + 2 bytes for length + data length
-            return struct.pack(MotorBit.HEADER_FORMAT, header, length) + data
+            return data.ljust(MotorBit.FIXED_LENGTH, b"\x00")
         else:
             raise ValueError("Invalid command or missing parameters")
 
     @staticmethod
     def into_base_model(message: bytes) -> MotorMessage:
-        header, length = struct.unpack(MotorBit.HEADER_FORMAT, message[:3])
-        if len(message) != length:
-            raise ValueError(
-                "Message length does not match the length specified in the header"
-            )
+        if len(message) != MotorBit.FIXED_LENGTH:
+            raise ValueError("Message length does not match the fixed length")
+        header = struct.unpack(MotorBit.HEADER_FORMAT, message[:1])[0]
         command = header & 0x0F
         if command in [
             MotorBitCommand.START,
@@ -66,8 +67,9 @@ class MotorBit:
         ]:
             return MotorMessage.create_message(command)
         elif command == MotorBitCommand.SET_POSITION:
+            array_length = struct.unpack(MotorBit.LENGTH_FORMAT, message[1:2])[0]
             data: list[dict[str, float]] = []
-            for i in range(3, length, 9):
+            for i in range(2, 2 + array_length * 9, 9):
                 motor_id, position_bits = struct.unpack(
                     MotorBit.POSITION_FORMAT, message[i : i + 9]
                 )

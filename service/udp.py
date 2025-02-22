@@ -41,7 +41,7 @@ class UDPClient:
         if self.transport:
             self.transport.sendto(data)
             print(
-                f"[bold blue][UDP Client][/bold blue]\t Sending {data} to {self.host}:{self.port}"
+                f"[bold blue][UDP Client][/bold blue]\t Sending data to {self.host}:{self.port}"
             )
         else:
             raise RuntimeError("UDP client is not running")

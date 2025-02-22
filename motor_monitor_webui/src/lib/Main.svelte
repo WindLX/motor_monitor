@@ -14,19 +14,17 @@
     let baseUrl: string = base_url;
     let notify: Notify;
 
-    let motors = writable<{ motorId: number; position: number }[]>([
-        { motorId: 0, position: 0 },
-    ]);
+    let motors = $state([{ motorId: 0, position: 0 }]);
 
-    let downstreamHost = writable<string>("");
-    let downstreamPort = writable<number>(0);
+    let downstreamHost = $state("");
+    let downstreamPort = $state(0);
 
     onMount(async () => {
         motorMonitorAPI = new MotorMonitorAPI(baseUrl);
         try {
             const downstream = await motorMonitorAPI.getDownstream();
-            downstreamHost.set(downstream.downstream.host);
-            downstreamPort.set(downstream.downstream.port);
+            downstreamHost = downstream.downstream.host;
+            downstreamPort = downstream.downstream.port;
         } catch (error) {
             notify.notify((error as any).message, "error");
         }
@@ -70,7 +68,17 @@
 
     async function setPosition() {
         try {
-            const motorPositions = $motors.map((motor) => ({
+            const motorIds = motors.map((motor) => motor.motorId);
+            const uniqueMotorIds = new Set(motorIds);
+            if (uniqueMotorIds.size !== motorIds.length) {
+                notify.notify("Motor IDs must be unique", "error");
+                return;
+            }
+            if (motors.length > 16) {
+                notify.notify("Cannot set more than 16 motors", "warning");
+                return;
+            }
+            const motorPositions = motors.map((motor) => ({
                 motor_id: motor.motorId,
                 position: motor.position,
             }));
@@ -82,39 +90,44 @@
     }
 
     function addMotor() {
-        console.log("Adding motor");
-        motors.update((currentMotors) => [
-            ...currentMotors,
-            { motorId: currentMotors.length + 1, position: 0 },
-        ]);
+        if (motors.length > 15) {
+            notify.notify("Cannot add more than 16 motors", "warning");
+            return;
+        }
+        motors.push({ motorId: 0, position: 0 });
     }
 
     function removeMotor(index: number) {
-        motors.update((currentMotors) => {
-            currentMotors.splice(index, 1);
-            return currentMotors;
-        });
+        if (motors.length === 1) {
+            notify.notify("Cannot remove last motor", "warning");
+            return;
+        }
+        motors = motors.filter((_, i) => i !== index);
     }
 
     function validateMotorId(index: number) {
-        motors.update((currentMotors) => {
-            if (currentMotors[index].motorId < MOTOR_ID_MIN) {
-                currentMotors[index].motorId = MOTOR_ID_MIN;
-            } else if (currentMotors[index].motorId > MOTOR_ID_MAX) {
-                currentMotors[index].motorId = MOTOR_ID_MAX;
+        motors = motors.map((motor, i) => {
+            if (i === index) {
+                if (motor.motorId < MOTOR_ID_MIN) {
+                    motor.motorId = MOTOR_ID_MIN;
+                } else if (motor.motorId > MOTOR_ID_MAX) {
+                    motor.motorId = MOTOR_ID_MAX;
+                }
             }
-            return currentMotors;
+            return motor;
         });
     }
 
     function validateMotorPosition(index: number) {
-        motors.update((currentMotors) => {
-            if (currentMotors[index].position < MOTOR_POSITION_MIN) {
-                currentMotors[index].position = MOTOR_POSITION_MIN;
-            } else if (currentMotors[index].position > MOTOR_POSITION_MAX) {
-                currentMotors[index].position = MOTOR_POSITION_MAX;
+        motors = motors.map((motor, i) => {
+            if (i === index) {
+                if (motor.position < MOTOR_POSITION_MIN) {
+                    motor.position = MOTOR_POSITION_MIN;
+                } else if (motor.position > MOTOR_POSITION_MAX) {
+                    motor.position = MOTOR_POSITION_MAX;
+                }
             }
-            return currentMotors;
+            return motor;
         });
     }
 </script>
@@ -122,22 +135,22 @@
 <div class="container">
     <div class="addr-box">
         {#if downstreamHost}
-            <span>IP Address: {$downstreamHost}</span>
+            <span>IP Address: {downstreamHost}</span>
         {/if}
         {#if downstreamPort}
-            <span>Port: {$downstreamPort}</span>
+            <span>Port: {downstreamPort}</span>
         {/if}
     </div>
 
     <div class="button-box">
-        <button on:click={startMotor}>Start Motor</button>
-        <button on:click={stopMotor}>Stop Motor</button>
-        <button on:click={pauseMotor}>Pause Motor</button>
-        <button on:click={resumeMotor}>Resume Motor</button>
+        <button onclick={startMotor}>Start Motor</button>
+        <button onclick={stopMotor}>Stop Motor</button>
+        <button onclick={pauseMotor}>Pause Motor</button>
+        <button onclick={resumeMotor}>Resume Motor</button>
     </div>
 
     <div class="input-box">
-        {#each $motors as motor, index}
+        {#each motors as motor, index}
             <div class="input-group">
                 <span class="motor-id">{index}</span>
                 <label for="motorId-{index}">Motor ID:</label>
@@ -147,7 +160,7 @@
                     min={MOTOR_ID_MIN}
                     max={MOTOR_ID_MAX}
                     bind:value={motor.motorId}
-                    on:input={() => validateMotorId(index)}
+                    oninput={() => validateMotorId(index)}
                 />
 
                 <label for="position-{index}">Position:</label>
@@ -157,7 +170,7 @@
                     min={MOTOR_POSITION_MIN}
                     max={MOTOR_POSITION_MAX}
                     bind:value={motor.position}
-                    on:input={() => validateMotorPosition(index)}
+                    oninput={() => validateMotorPosition(index)}
                 />
                 <input
                     class="position"
@@ -165,14 +178,14 @@
                     min={MOTOR_POSITION_MIN}
                     max={MOTOR_POSITION_MAX}
                     bind:value={motor.position}
-                    on:input={() => validateMotorPosition(index)}
+                    oninput={() => validateMotorPosition(index)}
                 />
 
-                <button on:click={() => removeMotor(index)}>Remove</button>
+                <button onclick={() => removeMotor(index)}>Remove</button>
             </div>
         {/each}
-        <button on:click={setPosition}>Set Positions</button>
-        <button on:click={addMotor}>Add Motor</button>
+        <button onclick={setPosition}>Set Positions</button>
+        <button onclick={addMotor}>Add Motor</button>
     </div>
 
     <Notify bind:this={notify} />

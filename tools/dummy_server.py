@@ -10,6 +10,7 @@ import asyncio
 from rich import print
 
 from service.config import load_config
+from proto.bit import MotorBit
 
 
 class UDPServerProtocol:
@@ -18,7 +19,8 @@ class UDPServerProtocol:
         print("[bold yellow][UDP Server][/bold yellow] Connection made")
 
     def datagram_received(self, data: bytes, addr: tuple[str, int]) -> None:
-        print(f"[bold yellow][UDP Server][/bold yellow] Received {data} from {addr}")
+        msg = MotorBit.into_base_model(data)
+        print(f"[bold yellow][UDP Server][/bold yellow] Received {msg} from {addr}")
         self.transport.sendto(b"ACK", addr)
 
     def connection_lost(self, exc: Optional[Exception]) -> None:

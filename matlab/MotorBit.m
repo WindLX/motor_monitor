@@ -1,51 +1,51 @@
 classdef MotorBit
     properties (Constant)
-        HEADER_FORMAT = 'uint8,uint16'; % 1 byte for header, 2 bytes for length
-        POSITION_FORMAT = 'uint8,uint64'; % 1 byte for motor id, 8 bytes for position (double)
+        HEADER_FORMAT = 'uint8';
+        LENGTH_FORMAT = 'uint8';
+        POSITION_FORMAT = 'uint8 uint64';
+        FIXED_LENGTH = 146;
     end
     
     methods (Static)
-        function bytes = from_base_model(command, data)
-            if ismember(command, [1, 2, 3, 4])
-                header = bitor(bitshift(1, 4), command);
-                length = 3; % 1 byte for header + 2 bytes for length
-                bytes = typecast(uint8([header, typecast(uint16(length), 'uint8')]), 'uint8');
-            elseif command == 5 && ~isempty(data)
-                header = bitor(bitshift(2, 4), command);
-                data_bytes = [];
-                for i = 1:length(data)
-                    motor_id = data(i).motor_id;
-                    position = data(i).position;
-                    position_bits = typecast(double(position), 'uint64');
-                    data_bytes = [data_bytes; typecast(uint8([motor_id, typecast(position_bits, 'uint8')]), 'uint8')];
+        function data = fromBaseModel(message)
+            if ismember(message.command.command, [1, 2, 3, 4])
+                header = uint8(message.command.command);
+                data = typecast(header, 'uint8');
+                data = [data; zeros(MotorBit.FIXED_LENGTH - length(data), 1, 'uint8')];
+            elseif message.command.command == 5 && ~isempty(message.data)
+                header = uint8(message.command.command);
+                array_length = uint8(length(message.data));
+                data = typecast(header, 'uint8');
+                data = [data; typecast(array_length, 'uint8')];
+                for i = 1:length(message.data)
+                    motor_id = uint8(message.data(i).motor_id);
+                    position = typecast(double(message.data(i).position), 'uint64');
+                    data = [data; typecast(motor_id, 'uint8'); typecast(position, 'uint8')];
                 end
-                length = 3 + length(data_bytes); % 1 byte for header + 2 bytes for length + data length
-                bytes = [typecast(uint8([header, typecast(uint16(length), 'uint8')]), 'uint8'); data_bytes];
+                data = [data; zeros(MotorBit.FIXED_LENGTH - length(data), 1, 'uint8')];
             else
                 error('Invalid command or missing parameters');
             end
         end
         
-        function message = into_base_model(bytes)
-            header = bytes(1);
-            length = typecast(bytes(2:3), 'uint16');
-            if length ~= length(bytes)
-                error('Message length does not match the length specified in the header');
+        function message = intoBaseModel(data)
+            if length(data) ~= MotorBit.FIXED_LENGTH
+                error('Message length does not match the fixed length');
             end
+            header = typecast(data(1), 'uint8');
             command = bitand(header, 15);
             if ismember(command, [1, 2, 3, 4])
-                message.command = command;
-                message.data = [];
+                message = MotorMessage.createMessage(command);
             elseif command == 5
-                data = [];
-                for i = 4:9:length(bytes)
-                    motor_id = bytes(i);
-                    position_bits = typecast(bytes(i+1:i+8), 'uint64');
+                array_length = typecast(data(2), 'uint8');
+                data_array = [];
+                for i = 3:9:3 + array_length * 9 - 1
+                    motor_id = typecast(data(i), 'uint8');
+                    position_bits = typecast(data(i+1:i+8), 'uint64');
                     position = typecast(position_bits, 'double');
-                    data = [data; struct('motor_id', motor_id, 'position', position)];
+                    data_array = [data_array; struct('motor_id', motor_id, 'position', position)];
                 end
-                message.command = command;
-                message.data = data;
+                message = MotorMessage.createMessage(command, data_array);
             else
                 error('Invalid command');
             end
