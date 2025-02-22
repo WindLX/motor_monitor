@@ -1,0 +1,11 @@
+[server]
+host = "localhost"
+port = 8000
+
+[downstream]
+host = "localhost"
+port = 8001
+
+# [downstream]
+# host = "8.135.10.183"
+# port = 56804

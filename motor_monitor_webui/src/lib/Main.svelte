@@ -2,11 +2,9 @@
     import { onMount } from "svelte";
     import { writable } from "svelte/store";
     import Notify from "./Notify.svelte";
-    import { base_url, ip, port } from "../assets/config.json";
+    import { base_url } from "../assets/config.json";
     import MotorMonitorAPI from "./api";
 
-    const PORT_MIN = 0;
-    const PORT_MAX = 65535;
     const MOTOR_ID_MIN = 0;
     const MOTOR_ID_MAX = 255;
     const MOTOR_POSITION_MIN = 0;
@@ -14,15 +12,24 @@
 
     let motorMonitorAPI: MotorMonitorAPI;
     let baseUrl: string = base_url;
-
     let notify: Notify;
 
     let motors = writable<{ motorId: number; position: number }[]>([
         { motorId: 0, position: 0 },
     ]);
 
-    onMount(() => {
-        motorMonitorAPI = new MotorMonitorAPI(baseUrl, ip, port);
+    let downstreamHost = writable<string>("");
+    let downstreamPort = writable<number>(0);
+
+    onMount(async () => {
+        motorMonitorAPI = new MotorMonitorAPI(baseUrl);
+        try {
+            const downstream = await motorMonitorAPI.getDownstream();
+            downstreamHost.set(downstream.downstream.host);
+            downstreamPort.set(downstream.downstream.port);
+        } catch (error) {
+            notify.notify((error as any).message, "error");
+        }
     });
 
     async function startMotor() {
@@ -89,14 +96,6 @@
         });
     }
 
-    function validatePort() {
-        if (motorMonitorAPI.port < PORT_MIN) {
-            motorMonitorAPI.port = PORT_MIN;
-        } else if (motorMonitorAPI.port > PORT_MAX) {
-            motorMonitorAPI.port = PORT_MAX;
-        }
-    }
-
     function validateMotorId(index: number) {
         motors.update((currentMotors) => {
             if (currentMotors[index].motorId < MOTOR_ID_MIN) {
@@ -122,18 +121,11 @@
 
 <div class="container">
     <div class="addr-box">
-        <label for="ip">IP Address: </label>
-        {#if motorMonitorAPI}
-            <input type="text" id="ip" bind:value={motorMonitorAPI.ip} />
-            <label for="port">Port:</label>
-            <input
-                type="number"
-                id="port"
-                min={PORT_MIN}
-                max={PORT_MAX}
-                bind:value={motorMonitorAPI.port}
-                on:input={validatePort}
-            />
+        {#if downstreamHost}
+            <span>IP Address: {$downstreamHost}</span>
+        {/if}
+        {#if downstreamPort}
+            <span>Port: {$downstreamPort}</span>
         {/if}
     </div>
 

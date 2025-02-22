@@ -1,27 +1,8 @@
 class MotorMonitorAPI {
     private baseUrl: string;
-    private _ip: string;
-    private _port: number;
 
-    constructor(baseUrl: string, ip: string, port: number) {
+    constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
-        this._ip = ip;
-        this._port = port;
-    }
-    get ip(): string {
-        return this._ip;
-    }
-
-    set ip(value: string) {
-        this._ip = value;
-    }
-
-    get port(): number {
-        return this._port;
-    }
-
-    set port(value: number) {
-        this._port = value;
     }
 
     async readRoot(): Promise<string> {
@@ -39,6 +20,21 @@ class MotorMonitorAPI {
         return response.text();
     }
 
+    async getDownstream(): Promise<any> {
+        const response = await fetch(`${this.baseUrl}/downstream`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+        }
+
+        return response.json();
+    }
+
     private async sendCommand(command: number, data?: Array<{ motor_id: number, position: number }>): Promise<any> {
         const response = await fetch(`${this.baseUrl}/cmd`, {
             method: 'POST',
@@ -46,7 +42,7 @@ class MotorMonitorAPI {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                ip: this.ip, port: this.port, command, data,
+                command, data,
             })
         });
 

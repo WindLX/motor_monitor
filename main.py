@@ -1,9 +1,10 @@
 import uvicorn
-from server.web import app
+
+from service.web import app, config
 
 
 def main():
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host=config.server.host, port=config.server.port)
 
 
 if __name__ == "__main__":
