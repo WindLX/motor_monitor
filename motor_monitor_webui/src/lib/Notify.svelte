@@ -1,6 +1,8 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { writable } from "svelte/store";
+    import { slide } from "svelte/transition";
+    import cancel from "../assets/cancel.svg";
 
     export let message = "";
     export let level = "info"; // 'info', 'warning', 'error'
@@ -47,26 +49,14 @@
     }
 </script>
 
-<div class="notify {getLevelClass()} {$visible ? '' : 'notify-hidden'}">
-    <span>{message}</span>
-    <button on:click={close} aria-label="Close" class="notify-close">
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            width="16"
-            height="16"
-        >
-            <path d="M0 0h24v24H0z" fill="none" />
-            <path
-                d="M18 6L6 18M6 6l12 12"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-            />
-        </svg>
-    </button>
-</div>
+{#if $visible}
+    <div class="notify {getLevelClass()}" transition:slide>
+        <span>{message}</span>
+        <button on:click={close} aria-label="Close" class="notify-close">
+            <img src={cancel} alt="Close" />
+        </button>
+    </div>
+{/if}
 
 <style>
     .notify {
@@ -107,10 +97,5 @@
     .notify-error {
         background-color: #f2dede;
         color: #a94442;
-    }
-
-    .notify-hidden {
-        opacity: 0;
-        transform: translateY(-1rem);
     }
 </style>

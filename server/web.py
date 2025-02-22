@@ -44,7 +44,7 @@ async def root():
             <title>Motor Monitor</title>
         </head>
         <body>
-            <h1>Welcome to the Motor Monitor</h1>
+            <h1>Motor Monitor Api is working</h1>
         </body>
     </html>
     """

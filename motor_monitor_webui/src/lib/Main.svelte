@@ -1,9 +1,16 @@
 <script lang="ts">
-    import MotorMonitorAPI from "./api";
     import { onMount } from "svelte";
+    import { writable } from "svelte/store";
     import Notify from "./Notify.svelte";
     import { base_url, ip, port } from "../assets/config.json";
-    import { writable } from "svelte/store";
+    import MotorMonitorAPI from "./api";
+
+    const PORT_MIN = 0;
+    const PORT_MAX = 65535;
+    const MOTOR_ID_MIN = 0;
+    const MOTOR_ID_MAX = 255;
+    const MOTOR_POSITION_MIN = 0;
+    const MOTOR_POSITION_MAX = 100000;
 
     let motorMonitorAPI: MotorMonitorAPI;
     let baseUrl: string = base_url;
@@ -81,15 +88,52 @@
             return currentMotors;
         });
     }
+
+    function validatePort() {
+        if (motorMonitorAPI.port < PORT_MIN) {
+            motorMonitorAPI.port = PORT_MIN;
+        } else if (motorMonitorAPI.port > PORT_MAX) {
+            motorMonitorAPI.port = PORT_MAX;
+        }
+    }
+
+    function validateMotorId(index: number) {
+        motors.update((currentMotors) => {
+            if (currentMotors[index].motorId < MOTOR_ID_MIN) {
+                currentMotors[index].motorId = MOTOR_ID_MIN;
+            } else if (currentMotors[index].motorId > MOTOR_ID_MAX) {
+                currentMotors[index].motorId = MOTOR_ID_MAX;
+            }
+            return currentMotors;
+        });
+    }
+
+    function validateMotorPosition(index: number) {
+        motors.update((currentMotors) => {
+            if (currentMotors[index].position < MOTOR_POSITION_MIN) {
+                currentMotors[index].position = MOTOR_POSITION_MIN;
+            } else if (currentMotors[index].position > MOTOR_POSITION_MAX) {
+                currentMotors[index].position = MOTOR_POSITION_MAX;
+            }
+            return currentMotors;
+        });
+    }
 </script>
 
 <div class="container">
     <div class="addr-box">
-        <label for="ip">IP Address:</label>
+        <label for="ip">IP Address: </label>
         {#if motorMonitorAPI}
             <input type="text" id="ip" bind:value={motorMonitorAPI.ip} />
             <label for="port">Port:</label>
-            <input type="number" id="port" bind:value={motorMonitorAPI.port} />
+            <input
+                type="number"
+                id="port"
+                min={PORT_MIN}
+                max={PORT_MAX}
+                bind:value={motorMonitorAPI.port}
+                on:input={validatePort}
+            />
         {/if}
     </div>
 
@@ -108,18 +152,29 @@
                 <input
                     type="number"
                     id="motorId-{index}"
+                    min={MOTOR_ID_MIN}
+                    max={MOTOR_ID_MAX}
                     bind:value={motor.motorId}
+                    on:input={() => validateMotorId(index)}
                 />
 
                 <label for="position-{index}">Position:</label>
                 <input
                     type="range"
                     id="position-{index}"
-                    min="0"
-                    max="100"
+                    min={MOTOR_POSITION_MIN}
+                    max={MOTOR_POSITION_MAX}
                     bind:value={motor.position}
+                    on:input={() => validateMotorPosition(index)}
                 />
-                <span class="position">{motor.position}</span>
+                <input
+                    class="position"
+                    type="number"
+                    min={MOTOR_POSITION_MIN}
+                    max={MOTOR_POSITION_MAX}
+                    bind:value={motor.position}
+                    on:input={() => validateMotorPosition(index)}
+                />
 
                 <button on:click={() => removeMotor(index)}>Remove</button>
             </div>
@@ -134,14 +189,27 @@
 <style>
     .container {
         display: flex;
-        flex-direction: column;
         align-items: center;
+        flex-direction: column;
         gap: 10px;
+    }
+
+    .addr-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px;
+        width: 800px;
     }
 
     .button-box {
         display: flex;
+        align-items: center;
+        justify-content: center;
         gap: 10px;
+        padding: 10px;
+        width: 800px;
     }
 
     .input-box {
@@ -151,17 +219,13 @@
         border: 1px solid #ccc;
         border-radius: 5px;
         padding: 10px;
+        width: 800px;
     }
 
     .input-group {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 10px;
-    }
-
-    .position {
-        width: 30px;
-        display: inline-block;
-        text-align: center;
     }
 </style>
