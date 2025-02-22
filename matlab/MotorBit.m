@@ -14,10 +14,13 @@ classdef MotorBit
                 data = [data; zeros(MotorBit.FIXED_LENGTH - length(data), 1, 'uint8')];
             elseif message.command.command == 5 && ~isempty(message.data)
                 header = uint8(message.command.command);
-                array_length = uint8(length(message.data));
+                array_length = length(message.data);
+                if array_length > 16
+                    error('Array length cannot exceed 16');
+                end
                 data = typecast(header, 'uint8');
-                data = [data; typecast(array_length, 'uint8')];
-                for i = 1:length(message.data)
+                data = [data; typecast(uint8(array_length), 'uint8')];
+                for i = 1:array_length
                     motor_id = uint8(message.data(i).motor_id);
                     position = typecast(double(message.data(i).position), 'uint64');
                     data = [data; typecast(motor_id, 'uint8'); typecast(position, 'uint8')];
