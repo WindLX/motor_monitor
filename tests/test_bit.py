@@ -2,14 +2,14 @@ import pytest
 import struct
 
 from proto.base import MotorMessage
-from proto.bit import MotorBit, MotorBitCommand
+from proto.bit import MotorBitMessage, MotorBitCommand
 
 
 def test_from_base_model_start():
     message = MotorMessage.create_message(MotorBitCommand.START)
-    result = MotorBit.from_base_model(message)
-    expected = struct.pack(MotorBit.HEADER_FORMAT, MotorBitCommand.START).ljust(
-        MotorBit.FIXED_LENGTH, b"\x00"
+    result = MotorBitMessage.from_base_model(message)
+    expected = struct.pack(MotorBitMessage.HEADER_FORMAT, MotorBitCommand.START).ljust(
+        MotorBitMessage.FIXED_LENGTH, b"\x00"
     )
     assert result == expected
 
@@ -19,33 +19,41 @@ def test_from_base_model_set_position():
         command=MotorBitCommand.SET_POSITION,
         data=[{"motor_id": 1, "position": 123456}],
     )
-    result = MotorBit.from_base_model(message)
-    header = struct.pack(MotorBit.HEADER_FORMAT, MotorBitCommand.SET_POSITION)
-    array_length = struct.pack(MotorBit.LENGTH_FORMAT, 1)
+    result = MotorBitMessage.from_base_model(message)
+    header = struct.pack(MotorBitMessage.HEADER_FORMAT, MotorBitCommand.SET_POSITION)
+    array_length = struct.pack(MotorBitMessage.LENGTH_FORMAT, 1)
     data = struct.pack(
-        MotorBit.POSITION_FORMAT, 1, struct.unpack("!Q", struct.pack("!d", 123456))[0]
+        MotorBitMessage.POSITION_FORMAT,
+        1,
+        struct.unpack("!Q", struct.pack("!d", 123456))[0],
     )
-    expected = (header + array_length + data).ljust(MotorBit.FIXED_LENGTH, b"\x00")
+    expected = (header + array_length + data).ljust(
+        MotorBitMessage.FIXED_LENGTH, b"\x00"
+    )
     assert result == expected
 
 
 def test_into_base_model_start():
-    message = struct.pack(MotorBit.HEADER_FORMAT, MotorBitCommand.START).ljust(
-        MotorBit.FIXED_LENGTH, b"\x00"
+    message = struct.pack(MotorBitMessage.HEADER_FORMAT, MotorBitCommand.START).ljust(
+        MotorBitMessage.FIXED_LENGTH, b"\x00"
     )
-    result = MotorBit.into_base_model(message)
+    result = MotorBitMessage.into_base_model(message)
     expected = MotorMessage.create_message(command=MotorBitCommand.START)
     assert result.command.command == expected.command.command
 
 
 def test_into_base_model_set_position():
-    header = struct.pack(MotorBit.HEADER_FORMAT, MotorBitCommand.SET_POSITION)
-    array_length = struct.pack(MotorBit.LENGTH_FORMAT, 1)
+    header = struct.pack(MotorBitMessage.HEADER_FORMAT, MotorBitCommand.SET_POSITION)
+    array_length = struct.pack(MotorBitMessage.LENGTH_FORMAT, 1)
     data = struct.pack(
-        MotorBit.POSITION_FORMAT, 1, struct.unpack("!Q", struct.pack("!d", 123456))[0]
+        MotorBitMessage.POSITION_FORMAT,
+        1,
+        struct.unpack("!Q", struct.pack("!d", 123456))[0],
     )
-    message = (header + array_length + data).ljust(MotorBit.FIXED_LENGTH, b"\x00")
-    result = MotorBit.into_base_model(message)
+    message = (header + array_length + data).ljust(
+        MotorBitMessage.FIXED_LENGTH, b"\x00"
+    )
+    result = MotorBitMessage.into_base_model(message)
     expected = MotorMessage.create_message(
         command=MotorBitCommand.SET_POSITION,
         data=[{"motor_id": 1, "position": 123456}],
@@ -57,12 +65,12 @@ def test_into_base_model_set_position():
 def test_invalid_command_from_base_model():
     with pytest.raises(ValueError):
         message = MotorMessage.create_message(command=99)
-        MotorBit.from_base_model(message)
+        MotorBitMessage.from_base_model(message)
 
 
 def test_invalid_command_into_base_model():
-    message = struct.pack(MotorBit.HEADER_FORMAT, 8).ljust(
-        MotorBit.FIXED_LENGTH, b"\x00"
+    message = struct.pack(MotorBitMessage.HEADER_FORMAT, 8).ljust(
+        MotorBitMessage.FIXED_LENGTH, b"\x00"
     )
     with pytest.raises(ValueError):
-        MotorBit.into_base_model(message)
+        MotorBitMessage.into_base_model(message)

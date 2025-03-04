@@ -6,22 +6,27 @@ from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from proto.base import MotorMessage
-from proto.request import CommandRequest
-from service.udp import UDPClient
+from proto.request import MotorMessageRequest
+from service.udp import UDPNode
 from service.config import load_config
 
 config = load_config("./config/config.toml")
 
-udp_client = UDPClient(config.downstream.host, config.downstream.port)
+udp_node = UDPNode(
+    config.udp_node.host,
+    config.udp_node.port,
+    config.downstream.host,
+    config.downstream.port,
+)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
-        await udp_client.start_client()
+        await udp_node.start_node()
         yield
     finally:
-        udp_client.close()
+        udp_node.close()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -60,14 +65,14 @@ async def handle_downstream():
 
 
 @app.post("/cmd")
-async def handle_command(request: CommandRequest):
+async def handle_command(request: MotorMessageRequest):
     try:
         motor_message = MotorMessage.create_message(
             command=request.command, data=request.data
         )
         print(f"[bold green][FastAPI Server][/bold green] Received request: {request}")
-        udp_client.send_bit(motor_message)
-        err = udp_client.get_error()
+        udp_node.send_bit(motor_message)
+        err = udp_node.get_error()
         if err:
             raise HTTPException(status_code=500, detail=str(err))
         print(f"[bold green][FastAPI Server][/bold green] Command sent")

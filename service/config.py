@@ -3,7 +3,12 @@ import toml
 from rich import print
 
 
-class ServerConfig(BaseModel):
+class WebServerConfig(BaseModel):
+    host: str
+    port: int
+
+
+class UdpNodeConfig(BaseModel):
     host: str
     port: int
 
@@ -14,7 +19,8 @@ class DownstreamConfig(BaseModel):
 
 
 class Config(BaseModel):
-    server: ServerConfig
+    web_server: WebServerConfig
+    udp_node: UdpNodeConfig
     downstream: DownstreamConfig
 
 

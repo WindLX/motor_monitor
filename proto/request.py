@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
 
-class CommandRequest(BaseModel):
+class MotorMessageRequest(BaseModel):
     command: int
     data: list[dict] | None = None
