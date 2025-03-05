@@ -1,16 +1,53 @@
+from typing import Optional
+
 import sys
 import os
+import random
+import asyncio
+
+from rich import print
 
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
-from typing import Optional
-
-import asyncio
-from rich import print
 
 from service.config import load_config
+from proto.base import MotorMessage
 from proto.bit import MotorBitMessage
+
+
+def generate_random_motor_state():
+    return MotorBitMessage.from_base_model(
+        MotorMessage.create_message(
+            command=8,
+            data=[
+                {
+                    "motor_id": 1,
+                    "position": random.randint(0, 10000),
+                    "velocity": random.randint(0, 100),
+                    "current": random.randint(0, 10),
+                },
+                {
+                    "motor_id": 2,
+                    "position": random.randint(0, 10000),
+                    "velocity": random.randint(0, 100),
+                    "current": random.randint(0, 10),
+                },
+                {
+                    "motor_id": 3,
+                    "position": random.randint(0, 10000),
+                    "velocity": random.randint(0, 100),
+                    "current": random.randint(0, 10),
+                },
+                {
+                    "motor_id": 4,
+                    "position": random.randint(0, 10000),
+                    "velocity": random.randint(0, 100),
+                    "current": random.randint(0, 10),
+                },
+            ],
+        )
+    )
 
 
 class DummyNode:
@@ -26,7 +63,7 @@ class DummyNode:
         msg = MotorBitMessage.into_base_model(data)
         print(f"[bold yellow][UDP Server][/bold yellow] Received {msg} from {addr}")
         self.remote_addr = addr
-        self.transport.sendto(b"ACK", addr)
+        # self.transport.sendto(b"ACK", addr)
 
     def connection_lost(self, exc: Optional[Exception]) -> None:
         print(f"[bold yellow][UDP Server][/bold yellow] Connection lost: {exc}")
@@ -34,8 +71,7 @@ class DummyNode:
     async def send_periodic_data(self):
         while True:
             if self.remote_addr:
-                print(111)
-                self.transport.sendto(b"Periodic Data", self.remote_addr)
+                self.transport.sendto(generate_random_motor_state(), self.remote_addr)
                 print(
                     f"[bold yellow][UDP Server][/bold yellow] Sent periodic data to {self.remote_addr}"
                 )

@@ -1,8 +1,39 @@
+import type { GetStateData, MotorMessage, MotorStateRecord } from "./model";
+import { motorStateStore } from "../store/share";
+
 class MotorMonitorAPI {
     private baseUrl: string;
+    private webSocket: WebSocket;
 
-    constructor(baseUrl: string) {
+    constructor(baseUrl: string, wsUrl: string) {
         this.baseUrl = baseUrl;
+        this.webSocket = new WebSocket(`${wsUrl}/state`);
+        this.initializeWebSocket();
+    }
+
+    initializeWebSocket() {
+        this.webSocket.onopen = () => {
+            console.log('WebSocket connected');
+        };
+        this.webSocket.onmessage = (event) => {
+            const message: MotorMessage = JSON.parse(event.data);
+            const rawData: GetStateData[] = message.data;
+            const data: Record<number, MotorStateRecord> = {};
+            rawData.forEach((item) => {
+                data[item.motor_id] = {
+                    position: item.position,
+                    velocity: item.velocity,
+                    current: item.current,
+                };
+            })
+            motorStateStore.update((state) => {
+                state.push(data);
+                return state;
+            });
+        }
+        this.webSocket.onclose = () => {
+            console.log('WebSocket closed');
+        }
     }
 
     async readRoot(): Promise<string> {

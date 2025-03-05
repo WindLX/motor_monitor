@@ -96,10 +96,15 @@ class MotorBitMessage:
             motor_id = struct.unpack(
                 MotorBitMessage.MOTOR_ID_FORMAT, message[i : i + 1]
             )[0]
-            position, velocity, current = struct.unpack(
-                f"{MotorBitMessage.INT_FORMAT}{MotorBitMessage.INT_FORMAT}{MotorBitMessage.INT_FORMAT}",
-                message[i + 1 : i + 13],
-            )
+            position = struct.unpack(
+                MotorBitMessage.INT_FORMAT, message[i + 1 : i + 5]
+            )[0]
+            velocity = struct.unpack(
+                MotorBitMessage.INT_FORMAT, message[i + 5 : i + 9]
+            )[0]
+            current = struct.unpack(
+                MotorBitMessage.INT_FORMAT, message[i + 9 : i + 13]
+            )[0]
             data.append(
                 {
                     "motor_id": motor_id,
@@ -118,7 +123,7 @@ class MotorBitMessage:
 
         if command in data_classes:
             data_class = data_classes[command]
-            data_instances = [data_class(**item) for item in data]
+            data_instances = [data_class(**item).model_dump() for item in data]
             return MotorMessage.create_message(command=command, data=data_instances)
 
         raise ValueError("Invalid command or missing parameters")

@@ -1,12 +1,13 @@
 from contextlib import asynccontextmanager
 
 from rich import print
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from proto.base import MotorMessage
 from proto.request import MotorMessageRequest
+from proto.bit import MotorBitMessage
 from service.udp import UDPNode
 from service.config import load_config
 
@@ -80,3 +81,14 @@ async def handle_command(request: MotorMessageRequest):
     except ValueError as e:
         print(f"[bold red][FastAPI Server] Error:[/bold red] {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.websocket("/state")
+async def websocket_state(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            motor_state = await udp_node.get_state()
+            await websocket.send_json(motor_state.model_dump())
+    except WebSocketDisconnect:
+        print(f"[bold red][FastAPI Server][/bold red] WebSocket disconnected")

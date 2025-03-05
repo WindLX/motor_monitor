@@ -21,6 +21,7 @@ class UDPNode:
         self.downstream_port = downstream_port
         self.transport: Optional[asyncio.DatagramTransport] = None
         self.error_queue: asyncio.Queue = asyncio.Queue()
+        self.state_queue: asyncio.Queue = asyncio.Queue()
 
     async def start_node(self) -> None:
         loop = asyncio.get_running_loop()
@@ -39,7 +40,13 @@ class UDPNode:
         print(f"[bold red][UDP Node][/bold red]\t Connection lost: {exc}")
 
     def datagram_received(self, data: bytes, addr: tuple[str, int]) -> None:
-        print(f"[bold blue][UDP Node][/bold blue]\t Received {data} from {addr}")
+        try:
+            motor_state = MotorBitMessage.into_base_model(data)
+            asyncio.create_task(self.state_queue.put(motor_state))
+        except Exception as e:
+            print(f"[bold red][UDP Node][/bold red]\t Error: {e}")
+            asyncio.create_task(self.error_queue.put(e))
+        print(f"[bold blue][UDP Node][/bold blue]\t Received {motor_state} from {addr}")
 
     def error_received(self, exc: Exception) -> None:
         print(f"[bold red][UDP Node][/bold red]\t Error received: {exc}")
@@ -57,6 +64,9 @@ class UDPNode:
     def send_bit(self, message: MotorMessage) -> None:
         data = MotorBitMessage.from_base_model(message)
         self.send_data(data)
+
+    async def get_state(self) -> MotorMessage:
+        return await self.state_queue.get()
 
     def close(self) -> None:
         if self.transport:
