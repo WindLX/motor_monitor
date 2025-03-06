@@ -1,87 +1,83 @@
 <script lang="ts">
+    // svelte
     import { onMount } from "svelte";
+
+    // lib
     import Chart from "./Chart.svelte";
-    import {
-        motorStateStore,
-        latestMotorStateStore,
-        motorPositionStore,
-        latestMotorPositionStore,
-        motorVelocityStore,
-        latestMotorVelocityStore,
-        motorCurrentStore,
-        latestMotorCurrentStore,
-    } from "../store/share";
     import type { MotorStateRecord } from "../lib/model";
+
+    // store
+    import { latestMotorStateStore } from "../store/share";
 
     let startTime = Date.now();
 
-    let positionLabels: string[] = $state([]);
-    let positionDatasets: any[] = $state([]);
+    let positionLabels: number[] = [];
+    let positionDatasets: any[] = [];
 
-    let velocityLabels: string[] = [];
+    let velocityLabels: number[] = [];
     let velocityDatasets: any[] = [];
 
-    let currentLabels: string[] = [];
+    let currentLabels: number[] = [];
     let currentDatasets: any[] = [];
 
-    function updatePositionChart(state: Record<number, MotorStateRecord>) {
-        const currentTime = (Date.now() - startTime) / 1000; // time in seconds
-        positionLabels.push(currentTime.toString());
-        for (const [id, motor] of Object.entries(state)) {
-            let dataset = positionDatasets.find(
-                (d) => d.label === `Motor ${id}`,
+    onMount(() => {
+        latestMotorStateStore.subscribe((state) => {
+            if (state === null) return;
+            positionDatasets = updateChart(
+                state,
+                positionLabels,
+                positionDatasets,
+                "position",
             );
-            if (!dataset) {
-                dataset = {
-                    label: `Motor ${id}`,
-                    data: [],
-                    borderColor: getRandomColor(),
-                    fill: false,
-                };
-                positionDatasets.push(dataset);
-            }
-            dataset.data.push(motor.position);
-        }
-    }
+            velocityDatasets = updateChart(
+                state,
+                velocityLabels,
+                velocityDatasets,
+                "velocity",
+            );
+            currentDatasets = updateChart(
+                state,
+                currentLabels,
+                currentDatasets,
+                "current",
+            );
+        });
+    });
 
-    function updateVelocityChart(state: Record<number, MotorStateRecord>) {
-        const currentTime = (Date.now() - startTime) / 1000; // time in seconds
-        velocityLabels.push(currentTime.toString());
-        for (const [id, motor] of Object.entries(state)) {
-            let dataset = velocityDatasets.find(
-                (d) => d.label === `Motor ${id}`,
-            );
-            if (!dataset) {
-                dataset = {
-                    label: `Motor ${id}`,
-                    data: [],
-                    borderColor: getRandomColor(),
-                    fill: false,
-                };
-                velocityDatasets.push(dataset);
-            }
-            dataset.data.push(motor.velocity);
-        }
-    }
+    function updateChart(
+        state: Record<number, MotorStateRecord>,
+        labels: number[],
+        datasets: any[],
+        key: keyof MotorStateRecord,
+    ) {
+        const currentTime = (Date.now() - startTime) / 1000;
 
-    function updateCurrentChart(state: Record<number, MotorStateRecord>) {
-        const currentTime = (Date.now() - startTime) / 1000; // time in seconds
-        currentLabels.push(currentTime.toString());
-        for (const [id, motor] of Object.entries(state)) {
-            let dataset = currentDatasets.find(
-                (d) => d.label === `Motor ${id}`,
-            );
-            if (!dataset) {
-                dataset = {
+        labels.push(currentTime);
+
+        const updatedDatasets = datasets.map((dataset) => {
+            const motorId = parseInt(dataset.label.split(" ")[1]);
+            const motor = state[motorId];
+
+            return motor
+                ? {
+                      ...dataset,
+                      data: [...dataset.data, motor[key]],
+                  }
+                : dataset;
+        });
+
+        Object.entries(state).forEach(([id, motor]) => {
+            if (!updatedDatasets.some((d) => d.label === `Motor ${id}`)) {
+                updatedDatasets.push({
                     label: `Motor ${id}`,
-                    data: [],
+                    data: [motor[key]],
                     borderColor: getRandomColor(),
                     fill: false,
-                };
-                currentDatasets.push(dataset);
+                });
             }
-            dataset.data.push(motor.current);
-        }
+        });
+
+        return updatedDatasets;
     }
 
     function getRandomColor() {
@@ -122,9 +118,21 @@
         </tbody>
     </table>
 
-    <!-- <Chart chartId="position-chart" {labels} {datasets} /> -->
-    <!-- <Chart chartId="velocity-chart" {labels} {datasets} /> -->
-    <!-- <Chart chartId="current-chart" {labels} {datasets} /> -->
+    <Chart
+        chartTitle="position"
+        labels={positionLabels}
+        datasets={positionDatasets}
+    />
+    <Chart
+        chartTitle="velocity"
+        labels={velocityLabels}
+        datasets={velocityDatasets}
+    />
+    <Chart
+        chartTitle="current"
+        labels={currentLabels}
+        datasets={currentDatasets}
+    />
 </div>
 
 <style>

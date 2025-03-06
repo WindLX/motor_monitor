@@ -51,9 +51,9 @@
                 $notify.warning("Motor IDs must be unique");
                 return;
             }
-            if (motors.length > limits.MOTOR_LENGTH_MAX) {
+            if (motors.length > limits.motor_length_max) {
                 $notify.warning(
-                    `Cannot set more than ${limits.MOTOR_LENGTH_MAX} motors`,
+                    `Cannot set more than ${limits.motor_length_max} motors`,
                 );
                 return;
             }
@@ -70,9 +70,9 @@
     }
 
     function addMotor() {
-        if (motors.length > limits.MOTOR_LENGTH_MAX - 1) {
+        if (motors.length > limits.motor_length_max - 1) {
             $notify.warning(
-                `Cannot add more than ${limits.MOTOR_LENGTH_MAX} motors`,
+                `Cannot add more than ${limits.motor_length_max} motors`,
             );
             return;
         }
@@ -90,10 +90,10 @@
     function validateMotorId(index: number) {
         motors = motors.map((motor, i) => {
             if (i === index) {
-                if (motor.motorId < limits.MOTOR_ID_MIN) {
-                    motor.motorId = limits.MOTOR_ID_MIN;
-                } else if (motor.motorId > limits.MOTOR_ID_MAX) {
-                    motor.motorId = limits.MOTOR_ID_MAX;
+                if (motor.motorId < limits.motor_id_min) {
+                    motor.motorId = limits.motor_id_min;
+                } else if (motor.motorId > limits.motor_id_max) {
+                    motor.motorId = limits.motor_id_max;
                 }
             }
             return motor;
@@ -103,10 +103,10 @@
     function validateMotorPosition(index: number) {
         motors = motors.map((motor, i) => {
             if (i === index) {
-                if (motor.position < limits.MOTOR_POSITION_MIN) {
-                    motor.position = limits.MOTOR_POSITION_MIN;
-                } else if (motor.position > limits.MOTOR_POSITION_MAX) {
-                    motor.position = limits.MOTOR_POSITION_MAX;
+                if (motor.position < limits.motor_position_min) {
+                    motor.position = limits.motor_position_min;
+                } else if (motor.position > limits.motor_position_max) {
+                    motor.position = limits.motor_position_max;
                 }
             }
             return motor;
@@ -130,8 +130,8 @@
                 <input
                     type="number"
                     id="motorId-{index}"
-                    min={limits.MOTOR_ID_MIN}
-                    max={limits.MOTOR_ID_MAX}
+                    min={limits.motor_id_min}
+                    max={limits.motor_id_max}
                     bind:value={motor.motorId}
                     oninput={() => validateMotorId(index)}
                 />
@@ -140,16 +140,16 @@
                 <input
                     type="range"
                     id="position-{index}"
-                    min={limits.MOTOR_POSITION_MIN}
-                    max={limits.MOTOR_POSITION_MAX}
+                    min={limits.motor_position_min}
+                    max={limits.motor_position_max}
                     bind:value={motor.position}
                     oninput={() => validateMotorPosition(index)}
                 />
                 <input
                     class="position"
                     type="number"
-                    min={limits.MOTOR_POSITION_MIN}
-                    max={limits.MOTOR_POSITION_MAX}
+                    min={limits.motor_position_min}
+                    max={limits.motor_position_max}
                     bind:value={motor.position}
                     oninput={() => validateMotorPosition(index)}
                 />

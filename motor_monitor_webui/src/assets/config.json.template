@@ -1,8 +1,6 @@
 {
-    "web_server": {
-        "host": "localhost",
-        "port": 8000
-    },
+    "http_server": "http://localhost:8000",
+    "ws_server": "ws://localhost:8000",
     "limits": {
         "motor_id_min": 0,
         "motor_id_max": 255,
