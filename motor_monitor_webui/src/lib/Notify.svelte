@@ -78,7 +78,7 @@
         message = newMessage;
         level = newLevel;
         duration = newDuration;
-        visible = false;
+        visible = true;
         progress.set(100, { duration: 0 });
         progress.set(0, { duration: newDuration, easing: cubicOut });
 

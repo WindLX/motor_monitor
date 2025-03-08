@@ -4,10 +4,12 @@
     import State from "./State.svelte";
     import Operation from "./Operation.svelte";
     import Notify from "./Notify.svelte";
+
+    let notify: Notify;
 </script>
 
 <div class="container">
-    <Notify />
+    <Notify bind:this={notify} />
 
     <Status />
     <Operation />
