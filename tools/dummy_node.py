@@ -19,7 +19,7 @@ from proto.bit import MotorBitMessage
 def generate_random_motor_state():
     return MotorBitMessage.from_base_model(
         MotorMessage.create_message(
-            command=8,
+            command=100,
             data=[
                 {
                     "motor_id": 1,

@@ -7,37 +7,64 @@
 
     let motors = $state([{ motorId: 0, position: 0 }]);
 
-    async function startMotor() {
+    async function startPlatform() {
         try {
-            await $motorMonitorAPI.startMotor();
-            $notify.success("Motor started");
+            await $motorMonitorAPI.startPlatform();
+            $notify.success("Platform started");
         } catch (error) {
             $notify.error((error as any).message);
         }
     }
 
-    async function stopMotor() {
+    async function zeroPlatform() {
         try {
-            await $motorMonitorAPI.stopMotor();
-            $notify.success("Motor stopped");
+            await $motorMonitorAPI.zeroPlatform();
+            $notify.success("Platform zeroed");
         } catch (error) {
             $notify.error((error as any).message);
         }
     }
 
-    async function pauseMotor() {
+    async function centerPlatform() {
         try {
-            await $motorMonitorAPI.pauseMotor();
-            $notify.success("Motor paused");
+            await $motorMonitorAPI.centerPlatform();
+            $notify.success("Platform centered");
         } catch (error) {
             $notify.error((error as any).message);
         }
     }
 
-    async function resumeMotor() {
+    async function stopPlatform() {
         try {
-            await $motorMonitorAPI.resumeMotor();
-            $notify.success("Motor resumed");
+            await $motorMonitorAPI.stopPlatform();
+            $notify.success("Platform stopped");
+        } catch (error) {
+            $notify.error((error as any).message);
+        }
+    }
+
+    async function automaticPositioning() {
+        try {
+            await $motorMonitorAPI.automaticPositioning();
+            $notify.success("Automatic positioning started");
+        } catch (error) {
+            $notify.error((error as any).message);
+        }
+    }
+
+    async function disablePlatform() {
+        try {
+            await $motorMonitorAPI.disablePlatform();
+            $notify.success("Platform disabled");
+        } catch (error) {
+            $notify.error((error as any).message);
+        }
+    }
+
+    async function clearStateMachineError() {
+        try {
+            await $motorMonitorAPI.clearStateMachineError();
+            $notify.success("State machine error cleared");
         } catch (error) {
             $notify.error((error as any).message);
         }
@@ -116,10 +143,15 @@
 
 <div class="operation-container">
     <div class="button-box">
-        <button onclick={startMotor}>Start Motor</button>
-        <button onclick={stopMotor}>Stop Motor</button>
-        <button onclick={pauseMotor}>Pause Motor</button>
-        <button onclick={resumeMotor}>Resume Motor</button>
+        <button onclick={startPlatform}>Start Platform</button>
+        <button onclick={zeroPlatform}>Zero Platform</button>
+        <button onclick={centerPlatform}>Center Platform</button>
+        <button onclick={stopPlatform}>Stop Platform</button>
+        <button onclick={automaticPositioning}>Automatic Positioning</button>
+        <button onclick={disablePlatform}>Disable Platform</button>
+        <button onclick={clearStateMachineError}
+            >Clear State Machine Error</button
+        >
     </div>
 
     <div class="input-box">

@@ -85,24 +85,36 @@ class MotorMonitorAPI {
         return response.json();
     }
 
-    async startMotor(): Promise<any> {
+    async startPlatform(): Promise<any> {
         return this.sendCommand(1);
     }
 
-    async stopMotor(): Promise<any> {
+    async zeroPlatform(): Promise<any> {
         return this.sendCommand(2);
     }
 
-    async pauseMotor(): Promise<any> {
+    async centerPlatform(): Promise<any> {
         return this.sendCommand(3);
     }
 
-    async resumeMotor(): Promise<any> {
+    async stopPlatform(): Promise<any> {
         return this.sendCommand(4);
     }
 
+    async automaticPositioning(): Promise<any> {
+        return this.sendCommand(5);
+    }
+
+    async disablePlatform(): Promise<any> {
+        return this.sendCommand(6);
+    }
+
+    async clearStateMachineError(): Promise<any> {
+        return this.sendCommand(7);
+    }
+
     async setPosition(data: Array<{ motor_id: number, position: number }>): Promise<any> {
-        return this.sendCommand(5, data);
+        return this.sendCommand(101, data);
     }
 }
 
