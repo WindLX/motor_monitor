@@ -5,6 +5,16 @@
     import { motorMonitorAPI } from "../store/share";
     import { notify } from "../store/notify";
 
+    // icon
+    import zero from "../assets/zero.svg";
+    import stop from "../assets/stop.svg";
+    import play from "../assets/play.svg";
+    import fresh from "../assets/fresh.svg";
+    import cancel from "../assets/cancel.svg";
+    import ban from "../assets/ban.svg";
+    import auto from "../assets/auto.svg";
+    import center from "../assets/center.svg";
+
     let motors = $state([{ motorId: 0, position: 0 }]);
 
     async function startPlatform() {
@@ -143,15 +153,34 @@
 
 <div class="operation-container">
     <div class="button-box">
-        <button onclick={startPlatform}>Start Platform</button>
-        <button onclick={zeroPlatform}>Zero Platform</button>
-        <button onclick={centerPlatform}>Center Platform</button>
-        <button onclick={stopPlatform}>Stop Platform</button>
-        <button onclick={automaticPositioning}>Automatic Positioning</button>
-        <button onclick={disablePlatform}>Disable Platform</button>
-        <button onclick={clearStateMachineError}
-            >Clear State Machine Error</button
-        >
+        <button onclick={startPlatform}>
+            <img src={play} alt="Start" class="icon" />
+            <span>Start Platform</span>
+        </button>
+        <button onclick={zeroPlatform}>
+            <img src={zero} alt="Zero" class="icon" />
+            <span>Zero Platform</span>
+        </button>
+        <button onclick={centerPlatform}>
+            <img src={center} alt="Center" class="icon" />
+            <span>Center Platform</span>
+        </button>
+        <button onclick={stopPlatform}>
+            <img src={stop} alt="Stop" class="icon" />
+            <span>Stop Platform</span>
+        </button>
+        <button onclick={automaticPositioning}>
+            <img src={auto} alt="Automatic" class="icon" />
+            <span>Automatic Positioning</span>
+        </button>
+        <button onclick={disablePlatform}>
+            <img src={ban} alt="Disable" class="icon" />
+            <span>Disable Platform</span>
+        </button>
+        <button onclick={clearStateMachineError}>
+            <img src={fresh} alt="Clear Error" class="icon" />
+            <span>Clear Error</span>
+        </button>
     </div>
 
     <div class="input-box">
@@ -210,6 +239,21 @@
         gap: 10px;
         padding: 10px;
         width: 800px;
+    }
+
+    .button-box button {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .button-box span {
+        font-size: 12px;
+    }
+
+    .icon {
+        width: 16px;
+        height: 16px;
     }
 
     .input-box {

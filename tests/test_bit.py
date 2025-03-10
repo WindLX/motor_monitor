@@ -26,8 +26,8 @@ def test_from_base_model_set_position():
     motor_id = struct.pack(MotorBitMessage.MOTOR_ID_FORMAT, 1)
     position = struct.pack(MotorBitMessage.STATE_FORMAT, 123456)
     velocity = struct.pack(MotorBitMessage.STATE_FORMAT, 0)
-    current = struct.pack(MotorBitMessage.STATE_FORMAT, 0)
-    expected = (header + array_length + motor_id + position + velocity + current).ljust(
+    torque = struct.pack(MotorBitMessage.STATE_FORMAT, 0)
+    expected = (header + array_length + motor_id + position + velocity + torque).ljust(
         MotorBitMessage.FIXED_LENGTH, b"\x00"
     )
     assert result == expected
@@ -48,8 +48,8 @@ def test_into_base_model_set_position():
     motor_id = struct.pack(MotorBitMessage.MOTOR_ID_FORMAT, 1)
     position = struct.pack(MotorBitMessage.STATE_FORMAT, 123456)
     velocity = struct.pack(MotorBitMessage.STATE_FORMAT, 0)
-    current = struct.pack(MotorBitMessage.STATE_FORMAT, 0)
-    message = (header + array_length + motor_id + position + velocity + current).ljust(
+    torque = struct.pack(MotorBitMessage.STATE_FORMAT, 0)
+    message = (header + array_length + motor_id + position + velocity + torque).ljust(
         MotorBitMessage.FIXED_LENGTH, b"\x00"
     )
     result = MotorBitMessage.into_base_model(message)

@@ -26,7 +26,7 @@ class GetStateData(BaseModel):
     motor_id: conint(ge=0, le=7)  # type: ignore
     position: conint()  # type: ignore
     velocity: conint()  # type: ignore
-    current: conint()  # type: ignore
+    torque: conint()  # type: ignore
 
 
 class MotorMessage(BaseModel):

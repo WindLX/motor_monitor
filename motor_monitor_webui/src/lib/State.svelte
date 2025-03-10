@@ -17,8 +17,8 @@
     let velocityLabels: number[] = [];
     let velocityDatasets: any[] = [];
 
-    let currentLabels: number[] = [];
-    let currentDatasets: any[] = [];
+    let torqueLabels: number[] = [];
+    let torqueDatasets: any[] = [];
 
     onMount(() => {
         latestMotorStateStore.subscribe((state) => {
@@ -35,11 +35,11 @@
                 velocityDatasets,
                 "velocity",
             );
-            currentDatasets = updateChart(
+            torqueDatasets = updateChart(
                 state,
-                currentLabels,
-                currentDatasets,
-                "current",
+                torqueLabels,
+                torqueDatasets,
+                "torque",
             );
         });
     });
@@ -50,9 +50,9 @@
         datasets: any[],
         key: keyof MotorStateRecord,
     ) {
-        const currentTime = (Date.now() - startTime) / 1000;
+        const torqueTime = (Date.now() - startTime) / 1000;
 
-        labels.push(currentTime);
+        labels.push(torqueTime);
 
         const updatedDatasets = datasets.map((dataset) => {
             const motorId = parseInt(dataset.label.split(" ")[1]);
@@ -97,7 +97,7 @@
                 <th>Motor ID</th>
                 <th>Position</th>
                 <th>Velocity</th>
-                <th>Current</th>
+                <th>Torque</th>
             </tr>
         </thead>
         <tbody>
@@ -107,7 +107,7 @@
                         <td>{id}</td>
                         <td>{motor.position}</td>
                         <td>{motor.velocity}</td>
-                        <td>{motor.current}</td>
+                        <td>{motor.torque}</td>
                     </tr>
                 {/each}
             {:else}
@@ -129,9 +129,9 @@
         datasets={velocityDatasets}
     />
     <Chart
-        chartTitle="current"
-        labels={currentLabels}
-        datasets={currentDatasets}
+        chartTitle="torque"
+        labels={torqueLabels}
+        datasets={torqueDatasets}
     />
 </div>
 

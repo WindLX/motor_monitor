@@ -9,7 +9,7 @@
         "motor_position_max": 100000,
         "motor_velocity_min": 0,
         "motor_velocity_max": 100000,
-        "motor_current_min": 0,
-        "motor_current_max": 100000
+        "motor_torque_min": 0,
+        "motor_torque_max": 100000
     }
 }

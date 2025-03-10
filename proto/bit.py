@@ -12,7 +12,7 @@ class MotorBitMessage:
     HEADER_FORMAT: str = "!B"  # 1 byte for header
     LENGTH_FORMAT: str = "!B"  # 1 byte for array length
     MOTOR_ID_FORMAT: str = "!B"  # 1 byte for motor id
-    STATE_FORMAT: str = "!i"  # 4 bytes for integers (position, velocity, current)
+    STATE_FORMAT: str = "!i"  # 4 bytes for integers (position, velocity, torque)
     FIXED_LENGTH: int = 138  # Fixed length for the message
 
     @staticmethod
@@ -44,11 +44,11 @@ class MotorBitMessage:
             if isinstance(item, SetPositionData):
                 data += struct.pack(MotorBitMessage.STATE_FORMAT, item.position)
                 data += struct.pack(MotorBitMessage.STATE_FORMAT, 0)  # velocity
-                data += struct.pack(MotorBitMessage.STATE_FORMAT, 0)  # current
+                data += struct.pack(MotorBitMessage.STATE_FORMAT, 0)  # torque
             elif isinstance(item, GetStateData):
                 data += struct.pack(MotorBitMessage.STATE_FORMAT, item.position)
                 data += struct.pack(MotorBitMessage.STATE_FORMAT, item.velocity)
-                data += struct.pack(MotorBitMessage.STATE_FORMAT, item.current)
+                data += struct.pack(MotorBitMessage.STATE_FORMAT, item.torque)
 
         return data.ljust(MotorBitMessage.FIXED_LENGTH, b"\x00")
 
@@ -84,7 +84,7 @@ class MotorBitMessage:
             velocity = struct.unpack(
                 MotorBitMessage.STATE_FORMAT, message[i + 5 : i + 9]
             )[0]
-            current = struct.unpack(
+            torque = struct.unpack(
                 MotorBitMessage.STATE_FORMAT, message[i + 9 : i + 13]
             )[0]
             data.append(
@@ -92,7 +92,7 @@ class MotorBitMessage:
                     "motor_id": motor_id,
                     "position": position,
                     "velocity": velocity,
-                    "current": current,
+                    "torque": torque,
                 }
             )
 

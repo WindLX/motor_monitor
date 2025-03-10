@@ -2,7 +2,7 @@ export interface GetStateData {
     motor_id: number;
     position: number;
     velocity: number;
-    current: number;
+    torque: number;
 }
 
 export interface MotorMessage {
@@ -13,5 +13,5 @@ export interface MotorMessage {
 export interface MotorStateRecord {
     position: number;
     velocity: number;
-    current: number;
+    torque: number;
 }

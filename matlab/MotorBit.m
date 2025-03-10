@@ -16,7 +16,7 @@ classdef MotorBit
             header = typecast(rawData(1), MotorBit.HEADER_FORMAT);
             command = bitand(header, 255);
             data_len = uint8(0);
-            data = zeros(8, 4);  % motor_id, position, velocity, current
+            data = zeros(8, 4);  % motor_id, position, velocity, torque
 
             if ismember(command, [1, 2, 3, 4, 6, 7])
                 return;
@@ -39,11 +39,11 @@ classdef MotorBit
                 velocity = swapbytes(typecast(velocity_bit, MotorBit.STATE_FORMAT));
                 velocity = double(velocity);
                 
-                current_bit = rawData(12 + (i-1)*13 : 15 + (i-1)*13);
-                current = swapbytes(typecast(current_bit, MotorBit.STATE_FORMAT));
-                current = double(current);
+                torque_bit = rawData(12 + (i-1)*13 : 15 + (i-1)*13);
+                torque = swapbytes(typecast(torque_bit, MotorBit.STATE_FORMAT));
+                torque = double(torque);
                 
-                data(i, :) = [motor_id, position, velocity, current];
+                data(i, :) = [motor_id, position, velocity, torque];
             end
         end
 
@@ -70,7 +70,7 @@ classdef MotorBit
                 rawData(3 + (i-1)*13) = data(i, 1);  % motor_id
                 rawData(4 + (i-1)*13 : 7 + (i-1)*13) = fliplr(typecast(uint32(data(i, 2)), 'uint8'));  % position
                 rawData(8 + (i-1)*13 : 11 + (i-1)*13) = fliplr(typecast(uint32(data(i, 3)), 'uint8'));  % velocity
-                rawData(12 + (i-1)*13 : 15 + (i-1)*13) = fliplr(typecast(int32(data(i, 4)), 'uint8'));  % current
+                rawData(12 + (i-1)*13 : 15 + (i-1)*13) = fliplr(typecast(int32(data(i, 4)), 'uint8'));  % torque
             end
         end
     end

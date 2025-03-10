@@ -23,7 +23,7 @@ class MotorMonitorAPI {
                 data[item.motor_id] = {
                     position: item.position,
                     velocity: item.velocity,
-                    current: item.current,
+                    torque: item.torque,
                 };
             })
             motorStateStore.update((state) => {

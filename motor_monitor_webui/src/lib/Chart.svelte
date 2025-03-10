@@ -32,6 +32,12 @@
                     duration: 0,
                     easing: "easeOutQuint",
                 },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: chartTitle,
+                    },
+                },
                 scales: {
                     x: {
                         type: "linear",

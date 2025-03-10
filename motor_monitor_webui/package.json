@@ -18,6 +18,8 @@
     "vite": "^6.1.0"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "chart.js": "^4.4.8"
   }
 }
