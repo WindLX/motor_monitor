@@ -105,7 +105,7 @@ class MotorMonitorAPI {
         return this.sendCommand(5);
     }
 
-    async disablePlatform(): Promise<any> {
+    async disableMotor(): Promise<any> {
         return this.sendCommand(6);
     }
 

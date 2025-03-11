@@ -105,6 +105,7 @@
 <style>
     .notify-container {
         position: fixed;
+        min-width: 200px;
         top: 1rem;
         right: 1rem;
         padding: 1rem;
@@ -131,23 +132,23 @@
     }
 
     .notify-info {
-        background-color: #d9edf7;
-        color: #31708f;
+        background-color: var(--notify-info-bg);
+        color: var(--notify-info-color);
     }
 
     .notify-success {
-        background-color: #dff0d8;
-        color: #3c763d;
+        background-color: var(--notify-success-bg);
+        color: var(--notify-success-color);
     }
 
     .notify-warning {
-        background-color: #fcf8e3;
-        color: #8a6d3b;
+        background-color: var(--notify-warning-bg);
+        color: var(--notify-warning-color);
     }
 
     .notify-error {
-        background-color: #f2dede;
-        color: #a94442;
+        background-color: var(--notify-error-bg);
+        color: var(--notify-error-color);
     }
 
     .notify-progress-bar {
@@ -158,18 +159,18 @@
     }
 
     .notify-progress-bar-info {
-        background-color: #31708f;
+        background-color: var(--notify-info-color);
     }
 
     .notify-progress-bar-success {
-        background-color: #3c763d;
+        background-color: var(--notify-success-color);
     }
 
     .notify-progress-bar-warning {
-        background-color: #8a6d3b;
+        background-color: var(--notify-warning-color);
     }
 
     .notify-progress-bar-error {
-        background-color: #a94442;
+        background-color: var(--notify-error-color);
     }
 </style>

@@ -4,16 +4,7 @@
     // store
     import { motorMonitorAPI } from "../store/share";
     import { notify } from "../store/notify";
-
-    // icon
-    import zero from "../assets/zero.svg";
-    import stop from "../assets/stop.svg";
-    import play from "../assets/play.svg";
-    import fresh from "../assets/fresh.svg";
-    import cancel from "../assets/cancel.svg";
-    import ban from "../assets/ban.svg";
-    import auto from "../assets/auto.svg";
-    import center from "../assets/center.svg";
+    import { FontAwesomeIcon } from "fontawesome-svelte";
 
     let motors = $state([{ motorId: 0, position: 0 }]);
 
@@ -56,16 +47,16 @@
     async function automaticPositioning() {
         try {
             await $motorMonitorAPI.automaticPositioning();
-            $notify.success("Automatic positioning started");
+            $notify.success("Automation started");
         } catch (error) {
             $notify.error((error as any).message);
         }
     }
 
-    async function disablePlatform() {
+    async function disableMotor() {
         try {
-            await $motorMonitorAPI.disablePlatform();
-            $notify.success("Platform disabled");
+            await $motorMonitorAPI.disableMotor();
+            $notify.success("Motor disabled");
         } catch (error) {
             $notify.error((error as any).message);
         }
@@ -154,31 +145,32 @@
 <div class="operation-container">
     <div class="button-box">
         <button onclick={startPlatform}>
-            <img src={play} alt="Start" class="icon" />
+            <FontAwesomeIcon icon={["fas", "play"]}></FontAwesomeIcon>
             <span>Start Platform</span>
         </button>
         <button onclick={zeroPlatform}>
-            <img src={zero} alt="Zero" class="icon" />
+            <FontAwesomeIcon icon={["fas", "0"]}></FontAwesomeIcon>
             <span>Zero Platform</span>
         </button>
         <button onclick={centerPlatform}>
-            <img src={center} alt="Center" class="icon" />
+            <FontAwesomeIcon icon={["fas", "down-left-and-up-right-to-center"]}
+            ></FontAwesomeIcon>
             <span>Center Platform</span>
         </button>
         <button onclick={stopPlatform}>
-            <img src={stop} alt="Stop" class="icon" />
+            <FontAwesomeIcon icon={["fas", "stop"]}></FontAwesomeIcon>
             <span>Stop Platform</span>
         </button>
         <button onclick={automaticPositioning}>
-            <img src={auto} alt="Automatic" class="icon" />
-            <span>Automatic Positioning</span>
+            <FontAwesomeIcon icon={["fas", "gauge-high"]}></FontAwesomeIcon>
+            <span>Automation</span>
         </button>
-        <button onclick={disablePlatform}>
-            <img src={ban} alt="Disable" class="icon" />
-            <span>Disable Platform</span>
+        <button onclick={disableMotor}>
+            <FontAwesomeIcon icon={["fas", "ban"]}></FontAwesomeIcon>
+            <span>Disable Motor</span>
         </button>
         <button onclick={clearStateMachineError}>
-            <img src={fresh} alt="Clear Error" class="icon" />
+            <FontAwesomeIcon icon={["fas", "rotate-right"]}></FontAwesomeIcon>
             <span>Clear Error</span>
         </button>
     </div>
@@ -215,11 +207,23 @@
                     oninput={() => validateMotorPosition(index)}
                 />
 
-                <button onclick={() => removeMotor(index)}>Remove</button>
+                <button onclick={() => removeMotor(index)}>
+                    <FontAwesomeIcon icon={["fas", "trash-can"]}
+                    ></FontAwesomeIcon>
+                    <span>Remove</span>
+                </button>
             </div>
         {/each}
-        <button onclick={setPosition}>Set Positions</button>
-        <button onclick={addMotor}>Add Motor</button>
+        <div class="input-box-bottom">
+            <button onclick={addMotor}>
+                <FontAwesomeIcon icon={["fas", "plus"]}></FontAwesomeIcon>
+                <span>Add Motor</span>
+            </button>
+            <button onclick={setPosition}>
+                <FontAwesomeIcon icon={["fas", "crosshairs"]}></FontAwesomeIcon>
+                <span>Set Positions</span>
+            </button>
+        </div>
     </div>
 </div>
 
@@ -230,40 +234,37 @@
         align-items: center;
         justify-content: center;
         margin-top: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .operation-container button {
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .button-box {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
         gap: 10px;
         padding: 10px;
-        width: 800px;
     }
 
     .button-box button {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .button-box span {
-        font-size: 12px;
-    }
-
-    .icon {
-        width: 16px;
-        height: 16px;
+        width: 190px;
     }
 
     .input-box {
         display: flex;
         flex-direction: column;
         gap: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
+        border-top: 1px solid #ccc;
         padding: 10px;
-        width: 800px;
+    }
+
+    .input-group button {
+        width: 130px;
     }
 
     .input-group {
@@ -271,5 +272,15 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
+    }
+
+    .input-box-bottom {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+    }
+
+    .input-box-bottom button {
+        width: 190px;
     }
 </style>
