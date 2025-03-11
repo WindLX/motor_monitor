@@ -4,7 +4,7 @@
     import { Tween } from "svelte/motion";
     import { cubicOut } from "svelte/easing";
 
-    import cancel from "../assets/cancel.svg";
+    import { FontAwesomeIcon } from "fontawesome-svelte";
     import { notify } from "../store/notify";
     import { NotifyLevel } from "./utils";
 
@@ -93,7 +93,9 @@
     <div class="notify-container {getLevelClass()}" transition:slide>
         <span>{message}</span>
         <button onclick={close} aria-label="Close" class="notify-close">
-            <img src={cancel} alt="Close" />
+            <span class="notify-close-icon">
+                <FontAwesomeIcon icon={["fas", "xmark"]}></FontAwesomeIcon>
+            </span>
         </button>
         <div
             class="notify-progress-bar {getLevelProgressBarClass()}"
@@ -148,6 +150,22 @@
 
     .notify-error {
         background-color: var(--notify-error-bg);
+        color: var(--notify-error-color);
+    }
+
+    .notify-info .notify-close-icon {
+        color: var(--notify-info-color);
+    }
+
+    .notify-success .notify-close-icon {
+        color: var(--notify-success-color);
+    }
+
+    .notify-warning .notify-close-icon {
+        color: var(--notify-warning-color);
+    }
+
+    .notify-error .notify-close-icon {
         color: var(--notify-error-color);
     }
 

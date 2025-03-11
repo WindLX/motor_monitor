@@ -6,12 +6,12 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faPlay, fa0, faDownLeftAndUpRightToCenter, faBan,
   faGaugeHigh, faStop, faRotateRight, faTrashCan,
-  faPlus, faCrosshairs
+  faPlus, faCrosshairs, faXmark, faChartSimple
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(faPlay, fa0, faDownLeftAndUpRightToCenter, faBan,
   faGaugeHigh, faStop, faRotateRight, faTrashCan,
-  faPlus, faCrosshairs
+  faPlus, faCrosshairs, faXmark, faChartSimple
 );
 
 const app = mount(App, {

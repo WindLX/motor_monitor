@@ -2,6 +2,7 @@
     // components
     import Status from "./Status.svelte";
     import State from "./State.svelte";
+    import Sidebar from "./Sidebar.svelte";
     import Operation from "./Operation.svelte";
     import Notify from "./Notify.svelte";
 
@@ -17,7 +18,7 @@
 
     <div class="content">
         <aside class="sidebar">
-            <!-- Add your sidebar content here -->
+            <Sidebar />
         </aside>
 
         <main class="main">
