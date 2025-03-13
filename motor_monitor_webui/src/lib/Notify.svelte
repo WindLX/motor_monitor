@@ -131,6 +131,7 @@
         padding: 0;
         margin-left: auto;
         outline: none;
+        width: fit-content;
     }
 
     .notify-info {

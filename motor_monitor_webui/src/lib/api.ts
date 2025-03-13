@@ -13,7 +13,6 @@ class MotorMonitorAPI {
 
     initializeWebSocket() {
         this.webSocket.onopen = () => {
-            console.log('WebSocket connected');
         };
         this.webSocket.onmessage = (event) => {
             const message: MotorMessage = JSON.parse(event.data);
@@ -32,9 +31,18 @@ class MotorMonitorAPI {
             });
         }
         this.webSocket.onclose = () => {
-            console.log('WebSocket closed');
         }
     }
+
+    public get wsReady(): boolean {
+        return this.webSocket.readyState === WebSocket.OPEN;
+    }
+
+
+    public get wsUrl(): string {
+        return this.webSocket.url;
+    }
+
 
     async readRoot(): Promise<string> {
         const response = await fetch(`${this.baseUrl}/`, {
@@ -45,10 +53,10 @@ class MotorMonitorAPI {
         });
 
         if (!response.ok) {
-            throw new Error(`Error: ${response.statusText}`);
+            throw new Error(`Error: Api ${response.statusText}`);
         }
 
-        return response.text();
+        return this.baseUrl;
     }
 
     async getDownstream(): Promise<any> {
@@ -60,7 +68,7 @@ class MotorMonitorAPI {
         });
 
         if (!response.ok) {
-            throw new Error(`Error: ${response.statusText}`);
+            throw new Error(`Error: Downstream ${response.statusText}`);
         }
 
         return response.json();
@@ -79,7 +87,7 @@ class MotorMonitorAPI {
 
         if (!response.ok) {
             const errorDetail = await response.json();
-            throw new Error(`Error: ${errorDetail.detail}`);
+            throw new Error(`Error: Command ${errorDetail.detail}`);
         }
 
         return response.json();

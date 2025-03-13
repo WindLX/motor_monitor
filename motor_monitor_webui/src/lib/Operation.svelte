@@ -233,15 +233,10 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin-top: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-
-    .operation-container button {
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        border-radius: 8px;
+        padding: 10px;
+        background-color: var(--main-white-color-0);
+        box-shadow: 0 0 8px 0 var(--main-white-color-3);
     }
 
     .button-box {
@@ -251,20 +246,12 @@
         padding: 10px;
     }
 
-    .button-box button {
-        width: 190px;
-    }
-
     .input-box {
         display: flex;
         flex-direction: column;
         gap: 10px;
-        border-top: 1px solid #ccc;
+        border-top: 1.5px solid var(--main-white-color-2);
         padding: 10px;
-    }
-
-    .input-group button {
-        width: 130px;
     }
 
     .input-group {
@@ -274,13 +261,13 @@
         gap: 10px;
     }
 
+    .input-group button {
+        width: 130px;
+    }
+
     .input-box-bottom {
         display: flex;
         justify-content: center;
         gap: 30px;
-    }
-
-    .input-box-bottom button {
-        width: 190px;
     }
 </style>

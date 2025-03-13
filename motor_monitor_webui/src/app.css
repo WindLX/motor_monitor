@@ -3,19 +3,26 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color: #213547;
-  background-color: #ffffff;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --main-bg: #f8f9fa;
-  --main-color: #31708f;
+  --primary-color: #3A537F;
+  --primary-color-light: #CFDDF4;
 
-  --notify-info-bg: #d9edf7;
-  --notify-info-color: var(--main-color);
+  --main-black-color-0: #213547;
+  --main-white-color-0: #fafafa;
+  --main-white-color-1: #f3f3f3;
+  --main-white-color-2: #e3e3e3;
+  --main-white-color-3: #d3d3d3;
+
+  color: var(--main-black-color-0);
+  background-color: var(--main-white-color-1);
+  border-color: var(--main-white-color-2);
+
+  --notify-info-bg: var(--primary-color-light);
+  --notify-info-color: var(--primary-color);
   --notify-success-bg: #dff0d8;
   --notify-success-color: #3c763d;
   --notify-warning-bg: #fcf8e3;
@@ -46,49 +53,53 @@ h1 {
   line-height: 1.1;
 }
 
-#app {
-  margin: 0 auto;
-  padding: 1rem;
-  text-align: center;
-}
-
 button {
+  width: 190px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   border-radius: 8px;
-  border: 2px solid transparent;
+  border: 1.5px solid transparent;
+  border-color: var(--main-white-color-2);
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #f9f9f9;
+  background-color: var(--main-white-color-0);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: 0.25s;
 }
 
 button:hover {
-  border-color: var(--main-color);
-  background-color: var(--main-color);
+  border-color: var(--primary-color);
+  background-color: var(--primary-color);
   color: #f9f9f9;
 }
 
 button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+button:focus-visible,
+input:focus,
+input:focus-visible {
+  outline: 4px auto var(--primary-color);
 }
 
 input {
   border-radius: 8px;
-  border: 2px solid transparent;
+  border: 1.5px solid transparent;
+  border-color: var(--main-white-color-2);
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-family: inherit;
-  transition: border-color 0.25s;
+  background-color: var(--main-white-color-0);
+  transition: 0.25s;
 }
 
 input:hover {
-  border-color: var(--main-color);
+  border-color: var(--primary-color);
 }
 
-input:focus,
-input:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+#app {
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
 }
