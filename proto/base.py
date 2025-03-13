@@ -18,12 +18,12 @@ class MotorCommand(BaseModel):
 
 
 class SetPositionData(BaseModel):
-    motor_id: conint(ge=0, le=7)  # type: ignore
+    motor_id: conint(ge=0, le=255)  # type: ignore
     position: conint()  # type: ignore
 
 
 class GetStateData(BaseModel):
-    motor_id: conint(ge=0, le=7)  # type: ignore
+    motor_id: conint(ge=0, le=255)  # type: ignore
     position: conint()  # type: ignore
     velocity: conint()  # type: ignore
     torque: conint()  # type: ignore
