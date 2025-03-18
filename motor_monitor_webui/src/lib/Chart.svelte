@@ -1,31 +1,55 @@
 <script lang="ts">
+    // assets
+    import { chart as chartConfig } from "../assets/config.json";
     // svelte
     import { onMount, onDestroy } from "svelte";
-
     // chart.js
     import { Chart, registerables } from "chart.js";
-    // import "chartjs-adapter-date-fns";
     Chart.register(...registerables);
 
     let {
         chartTitle,
         labels,
         datasets,
+        yUnit = "",
     }: {
         chartTitle: string;
         labels: number[];
         datasets: any[];
+        yUnit: string;
     } = $props();
 
     let chart: Chart | null = null;
+
+    function truncateDatasets(
+        labels: any[],
+        datasets: any[],
+        maxLength: number,
+    ) {
+        const truncatedLabels = labels.slice(-maxLength);
+        const truncatedDatasets = datasets.map((dataset) => ({
+            ...dataset,
+            data: dataset.data.slice(-maxLength),
+        }));
+        return { truncatedLabels, truncatedDatasets };
+    }
 
     onMount(() => {
         const ctx = document.getElementById(
             `${chartTitle}-chart`,
         ) as HTMLCanvasElement;
+
+        const {
+            truncatedLabels: initialLabels,
+            truncatedDatasets: initialDatasets,
+        } = truncateDatasets(labels, datasets, chartConfig.max_data_points);
+
         chart = new Chart(ctx, {
             type: "line",
-            data: { datasets },
+            data: {
+                labels: initialLabels,
+                datasets: initialDatasets,
+            },
             options: {
                 responsive: true,
                 animation: {
@@ -44,9 +68,12 @@
                         title: { display: true, text: "Time (seconds)" },
                         ticks: {
                             callback: function (value) {
-                                return Number(value).toFixed(1) + "s"; // 数值转带秒的标签
+                                return Number(value).toFixed(1) + "s";
                             },
                         },
+                    },
+                    y: {
+                        title: { display: true, text: yUnit },
                     },
                 },
             },
@@ -55,18 +82,23 @@
 
     $effect(() => {
         if (chart) {
-            // 保存当前的隐藏状态
+            // 截断为新长度
+            const { truncatedLabels, truncatedDatasets } = truncateDatasets(
+                labels,
+                datasets,
+                chartConfig.max_data_points,
+            );
+
+            // 保留图表的隐藏状态
             const visibility = chart.data.datasets.map(
                 (dataset) => dataset.hidden,
             );
-            // 更新标签和数据
-            chart.data.labels = labels;
-            // 将新数据集与旧隐藏状态合并
-            chart.data.datasets = datasets.map((dataset, index) => ({
+            // 更新数据
+            chart.data.labels = truncatedLabels;
+            chart.data.datasets = truncatedDatasets.map((dataset, index) => ({
                 ...dataset,
                 hidden: visibility[index] ?? dataset.hidden ?? false,
             }));
-            // 更新图表以应用新数据和隐藏状态
             chart.update();
         }
     });

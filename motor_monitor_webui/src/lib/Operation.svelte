@@ -1,12 +1,16 @@
 <script lang="ts">
     // assets
     import { limits } from "../assets/config.json";
+    // lib
+    import Slider from "./Slider.svelte";
     // store
     import { motorMonitorAPI } from "../store/share";
     import { notify } from "../store/notify";
     import { FontAwesomeIcon } from "fontawesome-svelte";
 
-    let motors = $state([{ motorId: 0, position: 0 }]);
+    let motors = $state([
+        { motorId: 0, position: limits.motor_position_safe_min },
+    ]);
 
     async function startPlatform() {
         try {
@@ -104,7 +108,7 @@
             );
             return;
         }
-        motors.push({ motorId: 0, position: 0 });
+        motors.push({ motorId: 0, position: limits.motor_position_safe_min });
     }
 
     function removeMotor(index: number) {
@@ -190,14 +194,15 @@
                 />
 
                 <label for="position-{index}">Position:</label>
-                <input
-                    type="range"
-                    id="position-{index}"
+                <Slider
                     min={limits.motor_position_min}
                     max={limits.motor_position_max}
                     bind:value={motor.position}
+                    safeMin={limits.motor_position_safe_min}
+                    safeMax={limits.motor_position_safe_max}
+                    showTicks={true}
                     oninput={() => validateMotorPosition(index)}
-                />
+                ></Slider>
                 <input
                     class="position"
                     type="number"
@@ -260,6 +265,10 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
+    }
+
+    .input-group input {
+        width: 50px;
     }
 
     .input-group button {

@@ -11,6 +11,7 @@
   --primary-color: #3A537F;
   --primary-color-light: #CFDDF4;
 
+  --main-font-color-0: #1a1a1a;
   --main-black-color-0: #213547;
   --main-white-color-0: #fafafa;
   --main-white-color-1: #f3f3f3;
@@ -33,12 +34,12 @@
 
 a {
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--main-font-color-0);
   text-decoration: inherit;
 }
 
 a:hover {
-  color: #1a1a1a;
+  color: var(--main-font-color-0);
 }
 
 body {
@@ -73,7 +74,7 @@ button {
 button:hover {
   border-color: var(--primary-color);
   background-color: var(--primary-color);
-  color: #f9f9f9;
+  color: var(--main-white-color-0);
 }
 
 button:focus,

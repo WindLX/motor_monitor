@@ -35,7 +35,7 @@ class MotorMonitorAPI {
     }
 
     public get wsReady(): boolean {
-        return this.webSocket.readyState === WebSocket.OPEN;
+        return this.webSocket.readyState === WebSocket.CONNECTING || this.webSocket.readyState === WebSocket.OPEN;
     }
 
 

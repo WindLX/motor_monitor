@@ -9,6 +9,9 @@
     // store
     import { latestMotorStateStore } from "../store/share";
 
+    // assets
+    import { chart as chartConfig } from "../assets/config.json";
+
     let startTime = Date.now();
 
     let positionLabels: number[] = [];
@@ -119,19 +122,22 @@
     </table>
 
     <Chart
-        chartTitle="position"
+        chartTitle="Position"
         labels={positionLabels}
         datasets={positionDatasets}
+        yUnit={chartConfig.yUnits.position}
     />
     <Chart
-        chartTitle="velocity"
+        chartTitle="Velocity"
         labels={velocityLabels}
         datasets={velocityDatasets}
+        yUnit={chartConfig.yUnits.velocity}
     />
     <Chart
-        chartTitle="torque"
+        chartTitle="Torque"
         labels={torqueLabels}
         datasets={torqueDatasets}
+        yUnit={chartConfig.yUnits.torque}
     />
 </div>
 

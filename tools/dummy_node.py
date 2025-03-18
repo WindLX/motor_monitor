@@ -23,25 +23,25 @@ def generate_random_motor_state():
             data=[
                 {
                     "motor_id": 1,
-                    "position": random.randint(0, 10000),
+                    "position": random.randint(0, 600),
                     "velocity": random.randint(0, 100),
                     "torque": random.randint(0, 10),
                 },
                 {
                     "motor_id": 2,
-                    "position": random.randint(0, 10000),
+                    "position": random.randint(0, 600),
                     "velocity": random.randint(0, 100),
                     "torque": random.randint(0, 10),
                 },
                 {
                     "motor_id": 3,
-                    "position": random.randint(0, 10000),
+                    "position": random.randint(0, 600),
                     "velocity": random.randint(0, 100),
                     "torque": random.randint(0, 10),
                 },
                 {
                     "motor_id": 4,
-                    "position": random.randint(0, 10000),
+                    "position": random.randint(0, 600),
                     "velocity": random.randint(0, 100),
                     "torque": random.randint(0, 10),
                 },

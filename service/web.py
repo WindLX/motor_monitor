@@ -7,7 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from proto.base import MotorMessage
 from proto.request import MotorMessageRequest
-from proto.bit import MotorBitMessage
 from service.udp import UDPNode
 from service.config import load_config
 

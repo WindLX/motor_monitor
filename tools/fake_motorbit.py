@@ -9,7 +9,7 @@ from proto.bit import MotorBitMessage
 
 data = MotorMessage.create_message(
     command=100,
-    data=[{"motor_id": 1, "position": 100000, "velocity": 1000, "torque": 100}],
+    data=[{"motor_id": 1, "position": 600, "velocity": 1000, "torque": 100}],
 )
 msg = MotorBitMessage.from_base_model(data)
 print(msg)

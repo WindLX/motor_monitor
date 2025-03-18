@@ -15,7 +15,7 @@ def test_from_base_model_start():
 
 
 def test_from_base_model_set_position():
-    data = [{"motor_id": 1, "position": 123456}]
+    data = [{"motor_id": 1, "position": 123}]
     message = MotorMessage.create_message(
         command=MotorCommandEnum.SET_POSITION,
         data=data,
@@ -24,7 +24,7 @@ def test_from_base_model_set_position():
     header = struct.pack(MotorBitMessage.HEADER_FORMAT, MotorCommandEnum.SET_POSITION)
     array_length = struct.pack(MotorBitMessage.LENGTH_FORMAT, 1)
     motor_id = struct.pack(MotorBitMessage.MOTOR_ID_FORMAT, 1)
-    position = struct.pack(MotorBitMessage.STATE_FORMAT, 123456)
+    position = struct.pack(MotorBitMessage.STATE_FORMAT, 123)
     velocity = struct.pack(MotorBitMessage.STATE_FORMAT, 0)
     torque = struct.pack(MotorBitMessage.STATE_FORMAT, 0)
     expected = (header + array_length + motor_id + position + velocity + torque).ljust(
@@ -46,14 +46,14 @@ def test_into_base_model_set_position():
     header = struct.pack(MotorBitMessage.HEADER_FORMAT, MotorCommandEnum.SET_POSITION)
     array_length = struct.pack(MotorBitMessage.LENGTH_FORMAT, 1)
     motor_id = struct.pack(MotorBitMessage.MOTOR_ID_FORMAT, 1)
-    position = struct.pack(MotorBitMessage.STATE_FORMAT, 123456)
+    position = struct.pack(MotorBitMessage.STATE_FORMAT, 123)
     velocity = struct.pack(MotorBitMessage.STATE_FORMAT, 0)
     torque = struct.pack(MotorBitMessage.STATE_FORMAT, 0)
     message = (header + array_length + motor_id + position + velocity + torque).ljust(
         MotorBitMessage.FIXED_LENGTH, b"\x00"
     )
     result = MotorBitMessage.into_base_model(message)
-    expected_data = [{"motor_id": 1, "position": 123456}]
+    expected_data = [{"motor_id": 1, "position": 123}]
     expected = MotorMessage.create_message(
         command=MotorCommandEnum.SET_POSITION,
         data=expected_data,
