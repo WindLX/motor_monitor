@@ -1,8 +1,9 @@
 <script lang="ts">
     // assets
-    import { limits } from "../assets/config.json";
+    import { limits, operation } from "../assets/config.json";
     // lib
     import Slider from "./Slider.svelte";
+    import Toggle from "./Toggle.svelte";
     // store
     import { motorMonitorAPI } from "../store/share";
     import { notify } from "../store/notify";
@@ -11,6 +12,8 @@
     let motors = $state([
         { motorId: 0, position: limits.motor_position_safe_min },
     ]);
+
+    let regularlySendMode = $state(false);
 
     async function startPlatform() {
         try {
@@ -75,7 +78,7 @@
         }
     }
 
-    async function setPosition() {
+    async function setPositionBase(enableNotify: boolean) {
         try {
             const motorIds = motors.map((motor) => motor.motorId);
             const uniqueMotorIds = new Set(motorIds);
@@ -95,10 +98,16 @@
             }));
 
             await $motorMonitorAPI.setPosition(motorPositions);
-            $notify.success("Positions set");
+            if (enableNotify) {
+                $notify.success("Positions set");
+            }
         } catch (error) {
             $notify.error((error as any).message);
         }
+    }
+
+    async function setPosition() {
+        await setPositionBase(true);
     }
 
     function addMotor() {
@@ -144,6 +153,21 @@
             return motor;
         });
     }
+
+    function regularlySend(checked: boolean) {
+        $notify.info(
+            `Regularly send position commands ${checked ? "enabled" : "disabled"}`,
+        );
+    }
+
+    $effect(() => {
+        if (regularlySendMode) {
+            const interval = setInterval(() => {
+                setPositionBase(false);
+            }, 1000 / operation.regularly_send_frequency);
+            return () => clearInterval(interval);
+        }
+    });
 </script>
 
 <div class="operation-container">
@@ -177,6 +201,13 @@
             <FontAwesomeIcon icon={["fas", "rotate-right"]}></FontAwesomeIcon>
             <span>Clear Error</span>
         </button>
+        <Toggle
+            bind:checked={regularlySendMode}
+            disabled={false}
+            oninput={regularlySend}
+        >
+            <span class="toggle-span">Regularly Send</span>
+        </Toggle>
     </div>
 
     <div class="input-box">
@@ -224,7 +255,7 @@
                 <FontAwesomeIcon icon={["fas", "plus"]}></FontAwesomeIcon>
                 <span>Add Motor</span>
             </button>
-            <button onclick={setPosition}>
+            <button onclick={setPosition} disabled={regularlySendMode}>
                 <FontAwesomeIcon icon={["fas", "crosshairs"]}></FontAwesomeIcon>
                 <span>Set Positions</span>
             </button>
@@ -245,14 +276,14 @@
         box-shadow: 0 0 8px 0 var(--main-white-color-3);
     }
 
-    .button-box {
+    .operation-container .button-box {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 10px;
         padding: 10px;
     }
 
-    .input-box {
+    .operation-container .input-box {
         display: flex;
         flex-direction: column;
         gap: 30px;
@@ -260,28 +291,32 @@
         padding: 10px;
     }
 
-    .input-group {
+    .operation-container .input-group {
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
     }
 
-    .input-group input {
+    .operation-container .input-group input {
         width: 50px;
     }
 
-    .input-group button {
+    .operation-container .input-group button {
         width: 130px;
     }
 
-    .input-box-bottom {
+    .operation-container .input-box-bottom {
         display: flex;
         justify-content: center;
         gap: 30px;
     }
 
-    .input-box-bottom button {
+    .operation-container .input-box-bottom button {
         width: 170px;
+    }
+
+    .operation-container .toggle-span {
+        margin-left: 10px;
     }
 </style>

@@ -17,8 +17,6 @@
         oninput: (value: number) => void;
     } = $props();
 
-    let median = $derived((min + max) / 2);
-
     let track: HTMLDivElement;
     let thumb: HTMLDivElement;
     let isDragging = false;
@@ -132,7 +130,8 @@
         z-index: 5;
     }
 
-    .slider-container .slider-thumb:active {
+    .slider-container .slider-thumb:active,
+    .slider-container .slider-thumb:hover {
         transform: translate(-50%, -50%) scale(1.2);
         box-shadow: 0 0 6px 0 var(--primary-color);
         cursor: grabbing;

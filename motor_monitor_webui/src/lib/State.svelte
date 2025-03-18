@@ -98,9 +98,9 @@
         <thead>
             <tr>
                 <th>Motor ID</th>
-                <th>Position</th>
-                <th>Velocity</th>
-                <th>Torque</th>
+                <th>{chartConfig.yUnits.position}</th>
+                <th>{chartConfig.yUnits.velocity}</th>
+                <th>{chartConfig.yUnits.torque}</th>
             </tr>
         </thead>
         <tbody>
@@ -158,17 +158,54 @@
 
     .state-container table {
         width: 100%;
-        border-collapse: collapse;
+        border-collapse: separate;
+        border-spacing: 0;
+        overflow: hidden;
     }
 
     .state-container th,
     .state-container td {
-        border: 1px solid #ddd;
-        padding: 8px;
+        padding: 12px 15px;
         text-align: center;
+        border-bottom: 1px solid var(--main-white-color-2);
+        transition: background 0.2s ease;
     }
 
     .state-container th {
-        background-color: #f2f2f2;
+        background: var(--primary-color-light);
+        /* color: #2c3e50; */
+        font-weight: 600;
+        font-size: 0.95em;
+        letter-spacing: 0.5px;
+        border-top: 1px solid var(--main-white-color-2);
+    }
+
+    .state-container tr:first-child th:first-child {
+        border-top-left-radius: 8px;
+    }
+
+    .state-container tr:first-child th:last-child {
+        border-top-right-radius: 8px;
+    }
+
+    .state-container tr:not(:last-child) td {
+        border-bottom: 1px solid #f0f2f5;
+    }
+
+    .state-container tbody tr:hover td {
+        background: var(--primary-color-light);
+        cursor: pointer;
+    }
+
+    .state-container td[colspan="4"] {
+        padding: 16px;
+        color: #909399;
+        font-style: italic;
+        background: #fafbfc;
+    }
+
+    .state-container th:first-child,
+    .state-container td:first-child {
+        width: 80px;
     }
 </style>

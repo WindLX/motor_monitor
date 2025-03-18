@@ -62,6 +62,11 @@
                         text: chartTitle,
                     },
                 },
+                elements: {
+                    line: {
+                        tension: 0.4, // This will smooth the lines
+                    },
+                },
                 scales: {
                     x: {
                         type: "linear",
