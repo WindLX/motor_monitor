@@ -235,6 +235,7 @@
         justify-content: center;
         border-radius: 8px;
         padding: 10px;
+        width: 98%;
         background-color: var(--main-white-color-0);
         box-shadow: 0 0 8px 0 var(--main-white-color-3);
     }
@@ -249,7 +250,7 @@
     .input-box {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 30px;
         border-top: 1.5px solid var(--main-white-color-2);
         padding: 10px;
     }
@@ -269,5 +270,9 @@
         display: flex;
         justify-content: center;
         gap: 30px;
+    }
+
+    .input-box-bottom button {
+        width: 170px;
     }
 </style>

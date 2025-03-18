@@ -52,9 +52,7 @@
     }
 
     .sidebar {
-        width: 320px;
-        min-width: 320px;
-        max-width: 320px;
+        width: 200px;
         border-radius: 5px;
         border: 1px solid green;
     }
@@ -64,7 +62,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 10px;
         padding: 10px;
         border-radius: 5px;
         border: 1px solid red;

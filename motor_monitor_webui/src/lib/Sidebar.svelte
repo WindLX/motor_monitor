@@ -17,19 +17,15 @@
     .sidebar {
         display: flex;
         flex-direction: column;
+        gap: 5px;
+        padding: 5px;
     }
 
     .sidebar-button {
-        display: flex;
-        align-items: center;
-        padding: 10px;
+        width: 100%;
         border: none;
-        background: none;
-        cursor: pointer;
-        font-size: 16px;
     }
 
     .sidebar-button:hover {
-        background-color: #f0f0f0;
     }
 </style>

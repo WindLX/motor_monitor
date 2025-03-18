@@ -100,6 +100,8 @@
         align-items: center;
         gap: 10px;
         padding: 10px;
+        padding-top: 0;
+        padding-bottom: 0;
         border-radius: 8px;
         background-color: var(--main-white-color-0);
         box-shadow: 0 0 8px 0 var(--main-white-color-3);
@@ -130,5 +132,8 @@
 
     .state-container button {
         width: fit-content;
+        font-size: 12px;
+        width: 30px;
+        justify-content: center;
     }
 </style>

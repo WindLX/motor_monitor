@@ -142,6 +142,12 @@
         align-items: center;
         justify-content: center;
         margin-top: 20px;
+        width: 98%;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 8px;
+        background-color: var(--main-white-color-0);
+        box-shadow: 0 0 8px 0 var(--main-white-color-3);
     }
 
     .state-container table {
