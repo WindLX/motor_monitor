@@ -99,8 +99,6 @@
             aria-valuenow={value}
         ></div>
     </div>
-
-    <!-- <div class="value-display" style="left: {getPosition(value)}%">{value}</div> -->
 </div>
 
 <style>
@@ -168,15 +166,5 @@
         top: 50%;
         border-radius: 4px;
         transform: translate(-50%, -50%);
-    }
-
-    .slider-container .value-display {
-        position: absolute;
-        top: -10px;
-        transform: translateX(-50%);
-        padding: 2px 8px;
-        color: var(--main-font-color-0);
-        border-radius: 4px;
-        font-size: 12px;
     }
 </style>

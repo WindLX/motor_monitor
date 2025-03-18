@@ -3,10 +3,12 @@
         checked = $bindable(false),
         disabled = false,
         oninput,
+        content,
     }: {
         checked: boolean;
         disabled: boolean;
         oninput: (checked: boolean) => void;
+        content?: () => any;
     } = $props();
 
     function toggle() {
@@ -17,16 +19,11 @@
     }
 </script>
 
-<div
-    class="toggle-container {disabled ? 'disabled' : ''}"
-    onclick={toggle}
-    role="checkbox"
-    aria-checked={checked}
-    tabindex="0"
->
+<div class="toggle-container {disabled ? 'disabled' : ''}" onclick={toggle}>
     <input type="checkbox" bind:checked {disabled} />
     <div class="slider"></div>
-    <slot></slot>
+
+    {@render content?.()}
 </div>
 
 <style>

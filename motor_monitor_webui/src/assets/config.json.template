@@ -10,9 +10,6 @@
         "motor_position_safe_min": 50,
         "motor_position_safe_max": 550
     },
-    "operation": {
-        "regularly_send_frequency": 50
-    },
     "chart": {
         "max_data_points": 60,
         "yUnits": {

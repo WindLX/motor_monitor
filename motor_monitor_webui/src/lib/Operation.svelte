@@ -1,6 +1,6 @@
 <script lang="ts">
     // assets
-    import { limits, operation } from "../assets/config.json";
+    import { limits } from "../assets/config.json";
     // lib
     import Slider from "./Slider.svelte";
     import Toggle from "./Toggle.svelte";
@@ -152,23 +152,22 @@
             }
             return motor;
         });
+
+        if (regularlySendMode) {
+            setPositionBase(false);
+        }
     }
 
-    function regularlySend(checked: boolean) {
+    function autoSend(checked: boolean) {
         $notify.info(
-            `Regularly send position commands ${checked ? "enabled" : "disabled"}`,
+            `Auto send position commands ${checked ? "enabled" : "disabled"}`,
         );
     }
-
-    $effect(() => {
-        if (regularlySendMode) {
-            const interval = setInterval(() => {
-                setPositionBase(false);
-            }, 1000 / operation.regularly_send_frequency);
-            return () => clearInterval(interval);
-        }
-    });
 </script>
+
+{#snippet content()}
+    <span class="toggle-span">Auto Send</span>
+{/snippet}
 
 <div class="operation-container">
     <div class="button-box">
@@ -204,10 +203,9 @@
         <Toggle
             bind:checked={regularlySendMode}
             disabled={false}
-            oninput={regularlySend}
-        >
-            <span class="toggle-span">Regularly Send</span>
-        </Toggle>
+            oninput={autoSend}
+            {content}
+        ></Toggle>
     </div>
 
     <div class="input-box">
