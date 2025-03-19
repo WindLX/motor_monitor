@@ -13,7 +13,7 @@
         { motorId: 0, position: limits.motor_position_safe_min },
     ]);
 
-    let regularlySendMode = $state(false);
+    let autoSendMode = $state(false);
 
     async function startPlatform() {
         try {
@@ -153,7 +153,7 @@
             return motor;
         });
 
-        if (regularlySendMode) {
+        if (autoSendMode) {
             setPositionBase(false);
         }
     }
@@ -201,7 +201,7 @@
             <span>Clear Error</span>
         </button>
         <Toggle
-            bind:checked={regularlySendMode}
+            bind:checked={autoSendMode}
             disabled={false}
             oninput={autoSend}
             {content}
@@ -253,7 +253,7 @@
                 <FontAwesomeIcon icon={["fas", "plus"]}></FontAwesomeIcon>
                 <span>Add Motor</span>
             </button>
-            <button onclick={setPosition} disabled={regularlySendMode}>
+            <button onclick={setPosition} disabled={autoSendMode}>
                 <FontAwesomeIcon icon={["fas", "crosshairs"]}></FontAwesomeIcon>
                 <span>Set Positions</span>
             </button>
