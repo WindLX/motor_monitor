@@ -12,7 +12,7 @@ sys.path.insert(0, project_root)
 
 
 from service.config import load_config
-from proto.base import MotorMessage
+from model.bit import MotorMessage
 from proto.bit import MotorBitMessage
 
 

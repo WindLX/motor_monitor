@@ -1,7 +1,7 @@
 import pytest
 import struct
 
-from proto.base import MotorMessage, MotorCommandEnum
+from model.bit import MotorMessage, MotorCommandEnum
 from proto.bit import MotorBitMessage
 
 

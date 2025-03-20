@@ -3,8 +3,7 @@ from typing import Optional
 
 from rich import print
 
-from proto.bit import MotorBitMessage
-from proto.base import MotorMessage
+from model.bit import MotorMessage
 
 
 class UDPNode:

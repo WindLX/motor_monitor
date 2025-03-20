@@ -1,0 +1,74 @@
+syntax = "proto3";
+package motor_monitor.proto;
+
+import "google/protobuf/timestamp.proto";
+
+// 控制指令类型
+enum ControlCommand {
+  COMMAND_UNSPECIFIED = 0;
+  START = 1;       // 启动电机
+  ZERO = 2;        // 归零操作
+  CENTER = 3;      // 回到中心点
+  STOP = 4;        // 紧急停止
+  AUTO = 5;        // 进入自动模式
+  DISABLE = 6;     // 禁用电机
+  CLEAR_ERROR = 7; // 清除错误状态
+  MANUAL = 8;      // 设置目标位置
+}
+
+// 状态查询类型
+enum StatusQuery {
+  QUERY_UNSPECIFIED = 0;
+  CURRENT_STATE = 1; // 获取当前完整状态
+  MACHINE_STATE = 2; // 获取状态机状态
+}
+
+// 状态机状态枚举
+enum MachineState {
+  UNKNOWN = 0;
+  INITIALIZING = 1; // 初始化中
+  IDLE = 2;         // 空闲状态
+  ZEROING = 3;      // 归零中
+  CENTERING = 4;    // 回中中
+  BRAKING = 5;      // 制动中
+  AUTOMATING = 6;   // 自动模式中
+  MANUALING = 7;    // 手动模式中
+  ERROR = 8;        // 错误状态
+}
+
+// 位置参数结构
+message ManualParams {
+  uint32 motor_id = 1; // 电机标识 (1-255)
+  uint32 position = 2; // 目标位置 (单位: 0.01mm)
+  uint32 velocity = 3; // 移动速度 (单位: RPM)
+}
+
+message MotorStatus {
+  uint32 motor_id = 1;
+  uint32 position = 2; // 当前位置 (单位: 0.01mm)
+  uint32 velocity = 3; // 当前速度 (单位: RPM)
+  uint32 torque = 4;   // 当前扭矩 (单位: N·m)
+}
+
+// 设备状态反馈
+message DeviceStatus {
+  MachineState state = 1;          // 当前状态机状态
+  uint32 error_code = 2;           // 最新错误代码
+  repeated MotorStatus motors = 3; // 电机状态列表
+}
+
+// 统一通信协议
+message MotorMessage {
+  // 元数据
+  string message_id = 1;                   // 消息唯一标识(UUID)
+  google.protobuf.Timestamp timestamp = 2; // 消息创建时间
+
+  // 指令负载（使用强类型代替 Any）
+  oneof payload {
+    ControlCommand control = 3; // 控制指令
+    StatusQuery query = 4;      // 状态查询
+    ManualParams position_set =
+        5; // 位置设置参数（COMMAND_SET_POSITION 时必填）
+    DeviceStatus status_report = 6; // 状态反馈（服务端响应时使用）
+  }
+}

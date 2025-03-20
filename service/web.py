@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from proto.base import MotorMessage
+from model.bit import MotorMessage
 from proto.request import MotorMessageRequest
 from service.udp import UDPNode
 from service.config import load_config
