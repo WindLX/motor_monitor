@@ -1,6 +1,6 @@
 export enum NotifyLevel {
-    INFO = 'info',
-    SUCCESS = 'success',
-    WARNING = 'warning',
-    ERROR = 'error',
+  INFO = "info",
+  SUCCESS = "success",
+  WARNING = "warning",
+  ERROR = "error",
 }

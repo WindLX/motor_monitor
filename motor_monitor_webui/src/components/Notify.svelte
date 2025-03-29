@@ -6,7 +6,7 @@
 
     import { FontAwesomeIcon } from "fontawesome-svelte";
     import { notify } from "../store/notify";
-    import { NotifyLevel } from "./utils";
+    import { NotifyLevel } from "../lib/utils";
 
     let message = $state("");
     let level: NotifyLevel = $state(NotifyLevel.INFO);

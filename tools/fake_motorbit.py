@@ -4,14 +4,15 @@ import sys
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
-from proto.base import MotorMessage
+from model.base import MotorMessage, CC_M_MANUAL_Data, MotorMessageTypeEnum
 from proto.bit import MotorBitMessage
 
-data = MotorMessage.create_message(
-    command=100,
-    data=[{"motor_id": 1, "position": 600, "velocity": 1000, "torque": 100}],
+data = MotorMessage.build(
+    message_type=MotorMessageTypeEnum.CC_M_MANUAL,
+    payload=[CC_M_MANUAL_Data(motor_id=1, target_position=1000)],
 )
-msg = MotorBitMessage.from_base_model(data)
-print(msg)
-# print every msg(bytes) in uint8 list
-print(list(msg))
+encoded = MotorBitMessage.from_base_model(data)
+print(encoded)
+decoded = MotorBitMessage.into_base_model(encoded)
+print(decoded)
+assert data == decoded

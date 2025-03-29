@@ -1,76 +1,102 @@
 import pytest
 import struct
+import uuid
 
-from proto.base import MotorMessage, MotorCommandEnum
+from model.base import (
+    MotorMessage,
+    MotorMessageTypeEnum,
+    CC_M_MANUAL_Data,
+    CC_M_STEP_CORRECTION_Data,
+    QS_SM_STATE_Data,
+    QS_M_STATE_Data,
+)
 from proto.bit import MotorBitMessage
 
 
-def test_from_base_model_start():
-    message = MotorMessage.create_message(command=MotorCommandEnum.START)
-    result = MotorBitMessage.from_base_model(message)
-    expected = struct.pack(MotorBitMessage.HEADER_FORMAT, MotorCommandEnum.START).ljust(
+def test_from_base_model_without_payload():
+    message = MotorMessage(
+        id=uuid.UUID("123e4567-e89b-12d3-a456-426614174000"),
+        timestamp=1672531200000.0,
+        message_type=1,
+        payload=None,
+    )
+    encoded = MotorBitMessage.from_base_model(message)
+    assert len(encoded) == MotorBitMessage.FIXED_LENGTH
+    assert uuid.UUID(bytes=encoded[:16]) == message.id
+
+
+def test_into_base_model_without_payload():
+    uuid_value = uuid.UUID("123e4567-e89b-12d3-a456-426614174000")
+    timestamp = 1672531200000.0
+    message_type = 1
+    encoded = struct.pack(f"!16sdB", uuid_value.bytes, timestamp, message_type).ljust(
         MotorBitMessage.FIXED_LENGTH, b"\x00"
     )
-    assert result == expected
+    decoded = MotorBitMessage.into_base_model(encoded)
+    assert decoded.id == uuid_value
+    assert decoded.timestamp == timestamp
+    assert decoded.message_type == message_type
 
 
-def test_from_base_model_set_position():
-    data = [{"motor_id": 1, "position": 123}]
-    message = MotorMessage.create_message(
-        command=MotorCommandEnum.SET_POSITION,
-        data=data,
+def test_from_base_model_with_payload_manual():
+    payload = [
+        CC_M_MANUAL_Data(motor_id=1, target_position=1000),
+        CC_M_MANUAL_Data(motor_id=2, target_position=2000),
+    ]
+    message = MotorMessage(
+        id=uuid.UUID("123e4567-e89b-12d3-a456-426614174000"),
+        timestamp=1672531200000.0,
+        message_type=51,
+        payload=payload,
     )
-    result = MotorBitMessage.from_base_model(message)
-    header = struct.pack(MotorBitMessage.HEADER_FORMAT, MotorCommandEnum.SET_POSITION)
-    array_length = struct.pack(MotorBitMessage.LENGTH_FORMAT, 1)
-    motor_id = struct.pack(MotorBitMessage.MOTOR_ID_FORMAT, 1)
-    position = struct.pack(MotorBitMessage.STATE_FORMAT, 123)
-    velocity = struct.pack(MotorBitMessage.STATE_FORMAT, 0)
-    torque = struct.pack(MotorBitMessage.STATE_FORMAT, 0)
-    expected = (header + array_length + motor_id + position + velocity + torque).ljust(
-        MotorBitMessage.FIXED_LENGTH, b"\x00"
+    encoded = MotorBitMessage.from_base_model(message)
+    assert len(encoded) == MotorBitMessage.FIXED_LENGTH
+
+
+def test_into_base_model_with_payload_manual():
+    uuid_value = uuid.UUID("123e4567-e89b-12d3-a456-426614174000")
+    timestamp = 1672531200000.0
+    message_type = 51
+    array_length = 2
+    payload = [
+        struct.pack("!BQ", 1, 1000),
+        struct.pack("!BQ", 2, 2000),
+    ]
+    encoded = (
+        struct.pack(f"!16sdBB", uuid_value.bytes, timestamp, message_type, array_length)
+        + b"".join(payload)
+    ).ljust(MotorBitMessage.FIXED_LENGTH, b"\x00")
+    decoded = MotorBitMessage.into_base_model(encoded)
+    assert decoded.id == uuid_value
+    assert decoded.timestamp == timestamp
+    assert decoded.message_type == message_type
+    assert len(decoded.payload) == array_length
+    assert decoded.payload[0].motor_id == 1
+    assert decoded.payload[0].target_position == 1000
+
+
+def test_from_base_model_with_payload_state():
+    payload = QS_SM_STATE_Data(state=5)
+    message = MotorMessage(
+        id=uuid.UUID("123e4567-e89b-12d3-a456-426614174000"),
+        timestamp=1672531200000.0,
+        message_type=101,
+        payload=payload,
     )
-    assert result == expected
+    encoded = MotorBitMessage.from_base_model(message)
+    assert len(encoded) == MotorBitMessage.FIXED_LENGTH
 
 
-def test_into_base_model_start():
-    message = struct.pack(MotorBitMessage.HEADER_FORMAT, MotorCommandEnum.START).ljust(
-        MotorBitMessage.FIXED_LENGTH, b"\x00"
-    )
-    result = MotorBitMessage.into_base_model(message)
-    expected = MotorMessage.create_message(command=MotorCommandEnum.START)
-    assert result.command.command == expected.command.command
-
-
-def test_into_base_model_set_position():
-    header = struct.pack(MotorBitMessage.HEADER_FORMAT, MotorCommandEnum.SET_POSITION)
-    array_length = struct.pack(MotorBitMessage.LENGTH_FORMAT, 1)
-    motor_id = struct.pack(MotorBitMessage.MOTOR_ID_FORMAT, 1)
-    position = struct.pack(MotorBitMessage.STATE_FORMAT, 123)
-    velocity = struct.pack(MotorBitMessage.STATE_FORMAT, 0)
-    torque = struct.pack(MotorBitMessage.STATE_FORMAT, 0)
-    message = (header + array_length + motor_id + position + velocity + torque).ljust(
-        MotorBitMessage.FIXED_LENGTH, b"\x00"
-    )
-    result = MotorBitMessage.into_base_model(message)
-    expected_data = [{"motor_id": 1, "position": 123}]
-    expected = MotorMessage.create_message(
-        command=MotorCommandEnum.SET_POSITION,
-        data=expected_data,
-    )
-    assert result.command.command == expected.command.command
-    assert result.data == expected.data
-
-
-def test_invalid_command_from_base_model():
-    with pytest.raises(ValueError):
-        message = MotorMessage.create_message(command=99)
-        MotorBitMessage.from_base_model(message)
-
-
-def test_invalid_command_into_base_model():
-    message = struct.pack(MotorBitMessage.HEADER_FORMAT, 10).ljust(
-        MotorBitMessage.FIXED_LENGTH, b"\x00"
-    )
-    with pytest.raises(ValueError):
-        MotorBitMessage.into_base_model(message)
+def test_into_base_model_with_payload_state():
+    uuid_value = uuid.UUID("123e4567-e89b-12d3-a456-426614174000")
+    timestamp = 1672531200000.0
+    message_type = 101
+    state = 5
+    encoded = struct.pack(
+        f"!16sdBB", uuid_value.bytes, timestamp, message_type, state
+    ).ljust(MotorBitMessage.FIXED_LENGTH, b"\x00")
+    decoded = MotorBitMessage.into_base_model(encoded)
+    assert decoded.id == uuid_value
+    assert decoded.timestamp == timestamp
+    assert decoded.message_type == message_type
+    assert decoded.payload.state == state

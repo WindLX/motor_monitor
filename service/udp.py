@@ -4,7 +4,12 @@ from typing import Optional
 from rich import print
 
 from proto.bit import MotorBitMessage
-from proto.base import MotorMessage
+from model.base import (
+    MotorMessage,
+    MotorMessageTypeEnum,
+    QS_M_STATE_Payload,
+    QS_SM_STATE_Payload,
+)
 
 
 class UDPNode:
@@ -21,7 +26,8 @@ class UDPNode:
         self.downstream_port = downstream_port
         self.transport: Optional[asyncio.DatagramTransport] = None
         self.error_queue: asyncio.Queue = asyncio.Queue()
-        self.state_queue: asyncio.Queue = asyncio.Queue()
+        self.m_state_queue: asyncio.Queue[QS_M_STATE_Payload] = asyncio.Queue()
+        self.sm_state_queue: asyncio.Queue[QS_SM_STATE_Payload] = asyncio.Queue()
 
     async def start_node(self) -> None:
         loop = asyncio.get_running_loop()
@@ -41,12 +47,17 @@ class UDPNode:
 
     def datagram_received(self, data: bytes, addr: tuple[str, int]) -> None:
         try:
-            motor_state = MotorBitMessage.into_base_model(data)
-            asyncio.create_task(self.state_queue.put(motor_state))
+            state = MotorBitMessage.into_base_model(data)
+            if state.message_type == MotorMessageTypeEnum.QS_M_STATE:
+                asyncio.create_task(self.m_state_queue.put(state.payload))
+            elif state.message_type == MotorMessageTypeEnum.QS_SM_STATE:
+                asyncio.create_task(self.sm_state_queue.put(state.payload))
+            else:
+                raise ValueError(f"Unknown message type: {state.message_type}")
         except Exception as e:
             print(f"[bold red][UDP Node][/bold red]\t Error: {e}")
             asyncio.create_task(self.error_queue.put(e))
-        print(f"[bold blue][UDP Node][/bold blue]\t Received {motor_state} from {addr}")
+        print(f"[bold blue][UDP Node][/bold blue]\t Received {state} from {addr}")
 
     def error_received(self, exc: Exception) -> None:
         print(f"[bold red][UDP Node][/bold red]\t Error received: {exc}")
@@ -65,8 +76,11 @@ class UDPNode:
         data = MotorBitMessage.from_base_model(message)
         self.send_data(data)
 
-    async def get_state(self) -> MotorMessage:
-        return await self.state_queue.get()
+    async def get_m_state(self) -> QS_M_STATE_Payload:
+        return await self.m_state_queue.get()
+
+    async def get_sm_state(self) -> QS_SM_STATE_Payload:
+        return await self.sm_state_queue.get()
 
     def close(self) -> None:
         if self.transport:

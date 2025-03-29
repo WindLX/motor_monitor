@@ -12,42 +12,25 @@ sys.path.insert(0, project_root)
 
 
 from service.config import load_config
-from proto.base import MotorMessage
-from proto.bit import MotorBitMessage
+from model.base import MotorMessage
+from proto.bit import MotorBitMessage, QS_M_STATE_Data, MotorMessageTypeEnum
 
 
 def generate_random_motor_state():
-    return MotorBitMessage.from_base_model(
-        MotorMessage.create_message(
-            command=100,
-            data=[
-                {
-                    "motor_id": 1,
-                    "position": random.randint(0, 600),
-                    "velocity": random.randint(0, 100),
-                    "torque": random.randint(0, 10),
-                },
-                {
-                    "motor_id": 2,
-                    "position": random.randint(0, 600),
-                    "velocity": random.randint(0, 100),
-                    "torque": random.randint(0, 10),
-                },
-                {
-                    "motor_id": 3,
-                    "position": random.randint(0, 600),
-                    "velocity": random.randint(0, 100),
-                    "torque": random.randint(0, 10),
-                },
-                {
-                    "motor_id": 4,
-                    "position": random.randint(0, 600),
-                    "velocity": random.randint(0, 100),
-                    "torque": random.randint(0, 10),
-                },
-            ],
+    payload = [
+        QS_M_STATE_Data(
+            motor_id=i,
+            position=random.randint(0, 600),
+            velocity=random.randint(0, 100),
+            torque=random.randint(0, 10),
         )
+        for i in range(1, 5)
+    ]
+    msg = MotorMessage.build(
+        message_type=MotorMessageTypeEnum.QS_M_STATE,
+        payload=payload,
     )
+    return MotorBitMessage.from_base_model(msg)
 
 
 class DummyNode:

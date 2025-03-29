@@ -21,6 +21,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "chart.js": "^4.4.8",
-    "fontawesome-svelte": "^3.0.0"
+    "fontawesome-svelte": "^3.0.0",
+    "toml": "^3.0.0"
   }
 }
