@@ -1,21 +1,28 @@
 // svelte
-import { writable, derived } from "svelte/store";
+import { writable } from "svelte/store";
 // lib
-import MotorMonitorAPI from "../lib/api";
 import {
-  MotorMessageTypeEnum,
   StateMachineStateEnum,
   type QS_M_STATE_Payload,
   type QS_SM_STATE_Payload,
 } from "../lib/model/base";
 // store
-import { messageManager } from "./instance";
+import { ConnectStatus } from "../lib/model/status";
 
-export const apiConnected = writable<boolean>(false);
-export const wsConnected = writable<boolean>(false);
-export const downstreamConnected = writable<boolean>(false);
+export const apiConnectStatus = writable<ConnectStatus>(
+  ConnectStatus.DISCONNECTED
+);
+export const motorStateWsConnectStatus = writable<ConnectStatus>(
+  ConnectStatus.DISCONNECTED
+);
+export const stateMachineWsConnectStatus = writable<ConnectStatus>(
+  ConnectStatus.DISCONNECTED
+);
+export const downstreamConnectStatus = writable<ConnectStatus>(
+  ConnectStatus.DISCONNECTED
+);
 
-export const motorStateStore = writable<Array<QS_M_STATE_Payload>>;
+export const motorStateStore = writable<Array<QS_M_STATE_Payload>>([]);
 export const stateMachineStateStore = writable<QS_SM_STATE_Payload>({
   state: StateMachineStateEnum.SM_UNKNOWN,
 });

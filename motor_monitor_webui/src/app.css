@@ -1,5 +1,13 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --sans-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --serif-font: Georgia, Cambria, "Times New Roman", Times, serif;
+  --mono-font: "FiraCode Nerd Font", "Hack Nerd Font", Consolas, "Courier New",
+    Courier, "Lucida Sans Typewriter", "Lucida Typewriter", Monaco, monospace;
+  --emoji-font: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji", "Noto Emoji", sans-serif;
+
+  font-family: var(--sans-font);
   line-height: 1.5;
   font-weight: 400;
 
@@ -8,8 +16,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --primary-color: #3A537F;
-  --primary-color-light: #CFDDF4;
+  --primary-color: #3a537f;
+  --primary-color-light: #cfddf4;
 
   --main-font-color-0: #1a1a1a;
   --main-black-color-0: #213547;
@@ -31,6 +39,11 @@
   --notify-warning-color: #8a6d3b;
   --notify-error-bg: #f2dede;
   --notify-error-color: #a94442;
+
+  --status-connecting: #f0ad4e;
+  --status-connected: #5cb85c;
+  --status-disconnecting: #f0ad4e;
+  --status-disconnected: #d9534f;
 }
 
 a {

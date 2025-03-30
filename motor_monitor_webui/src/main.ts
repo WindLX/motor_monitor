@@ -1,23 +1,14 @@
-import { mount } from 'svelte'
-import './app.css'
-import App from './App.svelte'
+import { mount } from "svelte";
+import "./app.css";
+import App from "./App.svelte";
 
-import { library } from '@fortawesome/fontawesome-svg-core'
-import {
-  faPlay, fa0, faDownLeftAndUpRightToCenter, faBan,
-  faGaugeHigh, faStop, faRotateRight, faTrashCan,
-  faPlus, faCrosshairs, faXmark, faChartSimple,
-  faTerminal
-} from '@fortawesome/free-solid-svg-icons'
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { iconLibrary } from "./lib/icon";
 
-library.add(faPlay, fa0, faDownLeftAndUpRightToCenter, faBan,
-  faGaugeHigh, faStop, faRotateRight, faTrashCan,
-  faPlus, faCrosshairs, faXmark, faChartSimple,
-  faTerminal
-);
+library.add(...iconLibrary);
 
 const app = mount(App, {
-  target: document.getElementById('app')!,
-})
+  target: document.getElementById("app")!,
+});
 
-export default app
+export default app;

@@ -187,7 +187,7 @@
       <span>Stop Platform</span>
     </button>
     <button onclick={automaticPositioning}>
-      <FontAwesomeIcon icon={["fas", "gauge-high"]}></FontAwesomeIcon>
+      <FontAwesomeIcon icon={["fas", "a"]}></FontAwesomeIcon>
       <span>Automation</span>
     </button>
     <button onclick={disableMotor}>
@@ -195,7 +195,7 @@
       <span>Disable Motor</span>
     </button>
     <button onclick={clearStateMachineError}>
-      <FontAwesomeIcon icon={["fas", "rotate-right"]}></FontAwesomeIcon>
+      <FontAwesomeIcon icon={["fas", "bug-slash"]}></FontAwesomeIcon>
       <span>Clear Error</span>
     </button>
     <Toggle

@@ -7,8 +7,6 @@ from proto.bit import MotorBitMessage
 from model.base import (
     MotorMessage,
     MotorMessageTypeEnum,
-    QS_M_STATE_Payload,
-    QS_SM_STATE_Payload,
 )
 
 
@@ -26,8 +24,8 @@ class UDPNode:
         self.downstream_port = downstream_port
         self.transport: Optional[asyncio.DatagramTransport] = None
         self.error_queue: asyncio.Queue = asyncio.Queue()
-        self.m_state_queue: asyncio.Queue[QS_M_STATE_Payload] = asyncio.Queue()
-        self.sm_state_queue: asyncio.Queue[QS_SM_STATE_Payload] = asyncio.Queue()
+        self.m_state_queue: asyncio.Queue[MotorMessage] = asyncio.Queue()
+        self.sm_state_queue: asyncio.Queue[MotorMessage] = asyncio.Queue()
 
     async def start_node(self) -> None:
         loop = asyncio.get_running_loop()
@@ -49,9 +47,9 @@ class UDPNode:
         try:
             state = MotorBitMessage.into_base_model(data)
             if state.message_type == MotorMessageTypeEnum.QS_M_STATE:
-                asyncio.create_task(self.m_state_queue.put(state.payload))
+                asyncio.create_task(self.m_state_queue.put(state))
             elif state.message_type == MotorMessageTypeEnum.QS_SM_STATE:
-                asyncio.create_task(self.sm_state_queue.put(state.payload))
+                asyncio.create_task(self.sm_state_queue.put(state))
             else:
                 raise ValueError(f"Unknown message type: {state.message_type}")
         except Exception as e:
@@ -76,10 +74,10 @@ class UDPNode:
         data = MotorBitMessage.from_base_model(message)
         self.send_data(data)
 
-    async def get_m_state(self) -> QS_M_STATE_Payload:
+    async def get_m_state(self) -> MotorMessage:
         return await self.m_state_queue.get()
 
-    async def get_sm_state(self) -> QS_SM_STATE_Payload:
+    async def get_sm_state(self) -> MotorMessage:
         return await self.sm_state_queue.get()
 
     def close(self) -> None:

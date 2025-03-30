@@ -28,6 +28,18 @@ export enum StateMachineStateEnum {
   SM_MANUALING = 101,
 }
 
+export function stateMachineStateEnumConverter(
+  state: StateMachineStateEnum
+): string {
+  switch (state) {
+    case StateMachineStateEnum.SM_UNKNOWN:
+      return "UNKNOWN";
+
+    default:
+      return "UNKNOWN";
+  }
+}
+
 export interface CC_M_MANUAL_Data {
   motor_id: number;
   target_position: number;

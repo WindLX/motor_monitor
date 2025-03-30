@@ -3,8 +3,10 @@ import type {
   CC_M_MANUAL_Payload,
   CC_M_STEP_CORRECTION_Payload,
 } from "./model/base";
-import { messageManager } from "../store/instance";
+import type { DownstreamConfig } from "./model/config";
 import type { MotorNetMessageResponse } from "./model/net";
+import type { ConnectStatus } from "./model/status";
+import { messageManager } from "../store/instance";
 
 class MotorMonitorAPI {
   private baseUrl: string;
@@ -13,18 +15,82 @@ class MotorMonitorAPI {
   private motorWebSocket: WebSocket | null;
   private stateMachineWebSocket: WebSocket | null;
 
+  private onMotorWebSocketConnected: () => void;
+  private onMotorWebSocketDisconnected: () => void;
+  private onMotorWebSocketError: () => void;
+  private onStateMachineWebSocketConnected: () => void;
+  private onStateMachineWebSocketDisconnected: () => void;
+  private onStateMachineWebSocketError: () => void;
+
   constructor(baseUrl: string, wsUrl: string) {
     this.baseUrl = baseUrl;
     this.motorWebSocketUrl = `${wsUrl}/qs/m_state`;
     this.stateMachineWebSocketUrl = `${wsUrl}/qs/sm_state`;
     this.motorWebSocket = null;
     this.stateMachineWebSocket = null;
+
+    this.onMotorWebSocketConnected = () => {};
+    this.onMotorWebSocketDisconnected = () => {};
+    this.onMotorWebSocketError = () => {};
+    this.onStateMachineWebSocketConnected = () => {};
+    this.onStateMachineWebSocketDisconnected = () => {};
+    this.onStateMachineWebSocketError = () => {};
+  }
+
+  public subcribeOnMotorWebSocketConnected(callback: () => void): () => void {
+    this.onMotorWebSocketConnected = callback;
+    return () => {
+      this.onMotorWebSocketConnected = () => {};
+    };
+  }
+
+  public subscribeOnMotorWebSocketDisconnected(
+    callback: () => void
+  ): () => void {
+    this.onMotorWebSocketDisconnected = callback;
+    return () => {
+      this.onMotorWebSocketDisconnected = () => {};
+    };
+  }
+
+  public subscribeOnMotorWebSocketError(callback: () => void): () => void {
+    this.onMotorWebSocketError = callback;
+    return () => {
+      this.onMotorWebSocketError = () => {};
+    };
+  }
+
+  public subscribeOnStateMachineWebSocketConnected(
+    callback: () => void
+  ): () => void {
+    this.onStateMachineWebSocketConnected = callback;
+    return () => {
+      this.onStateMachineWebSocketConnected = () => {};
+    };
+  }
+
+  public subscribeOnStateMachineWebSocketDisconnected(
+    callback: () => void
+  ): () => void {
+    this.onStateMachineWebSocketDisconnected = callback;
+    return () => {
+      this.onStateMachineWebSocketDisconnected = () => {};
+    };
+  }
+
+  public subscribeOnStateMachineWebSocketError(
+    callback: () => void
+  ): () => void {
+    this.onStateMachineWebSocketError = callback;
+    return () => {
+      this.onStateMachineWebSocketError = () => {};
+    };
   }
 
   public connectMotorWebSocket() {
     this.motorWebSocket = new WebSocket(this.motorWebSocketUrl);
     if (this.motorWebSocket) {
-      this.motorWebSocket.onopen = () => {};
+      this.motorWebSocket.onopen = this.onMotorWebSocketConnected;
       this.motorWebSocket.onmessage = (event) => {
         const message: MotorNetMessageResponse = JSON.parse(event.data);
         messageManager.update((m) => {
@@ -32,7 +98,8 @@ class MotorMonitorAPI {
           return m;
         });
       };
-      this.motorWebSocket.onclose = () => {};
+      this.motorWebSocket.onclose = this.onMotorWebSocketDisconnected;
+      this.motorWebSocket.onerror = this.onMotorWebSocketError;
     }
   }
 
@@ -41,17 +108,19 @@ class MotorMonitorAPI {
   }
 
   public connectStateMachineWebSocket() {
-    this.motorWebSocket = new WebSocket(this.motorWebSocketUrl);
-    if (this.motorWebSocket) {
-      this.motorWebSocket.onopen = () => {};
-      this.motorWebSocket.onmessage = (event) => {
+    this.stateMachineWebSocket = new WebSocket(this.stateMachineWebSocketUrl);
+    if (this.stateMachineWebSocket) {
+      this.stateMachineWebSocket.onopen = this.onStateMachineWebSocketConnected;
+      this.stateMachineWebSocket.onmessage = (event) => {
         const message: MotorNetMessageResponse = JSON.parse(event.data);
         messageManager.update((m) => {
           m.addMessage(message);
           return m;
         });
       };
-      this.motorWebSocket.onclose = () => {};
+      this.stateMachineWebSocket.onclose =
+        this.onStateMachineWebSocketDisconnected;
+      this.stateMachineWebSocket.onerror = this.onStateMachineWebSocketError;
     }
   }
 
@@ -59,7 +128,7 @@ class MotorMonitorAPI {
     this.stateMachineWebSocket?.close();
   }
 
-  public get motorWsStatus(): number {
+  public get motorWsStatus(): ConnectStatus {
     return this.motorWebSocket?.readyState || WebSocket.CLOSED;
   }
 
@@ -67,7 +136,7 @@ class MotorMonitorAPI {
     return this.motorWebSocketUrl;
   }
 
-  public get stateMachineWsStatus(): number {
+  public get stateMachineWsStatus(): ConnectStatus {
     return this.stateMachineWebSocket?.readyState || WebSocket.CLOSED;
   }
 
@@ -90,7 +159,7 @@ class MotorMonitorAPI {
     return this.baseUrl;
   }
 
-  async getDownstream(): Promise<any> {
+  async getDownstream(): Promise<DownstreamConfig> {
     const response = await fetch(`${this.baseUrl}/downstream`, {
       method: "GET",
       headers: {

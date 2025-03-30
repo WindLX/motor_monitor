@@ -26,6 +26,8 @@
   let torqueLabels: number[] = [];
   let torqueDatasets: any[] = [];
 
+  let currentMotorState: QS_M_STATE_Payload = $state([]);
+
   var unsub: () => void;
 
   onMount(() => {
@@ -66,28 +68,29 @@
 
     labels.push(time);
 
-    const updatedDatasets = datasets.map((dataset) => {
-      const motorId = parseInt(dataset.label.split(" ")[1]);
-      const motor = state[motorId];
+    const updatedDatasets: any[] = [];
+    // const updatedDatasets = datasets.map((dataset) => {
+    //   const motorId = parseInt(dataset.label.split(" ")[1]);
+    //   const motor = state[motorId];
 
-      return motor
-        ? {
-            ...dataset,
-            data: [...dataset.data, motor[key]],
-          }
-        : dataset;
-    });
+    //   return motor
+    //     ? {
+    //         ...dataset,
+    //         data: [...dataset.data, motor[key]],
+    //       }
+    //     : dataset;
+    // });
 
-    Object.entries(state).forEach(([id, motor]) => {
-      if (!updatedDatasets.some((d) => d.label === `Motor ${id}`)) {
-        updatedDatasets.push({
-          label: `Motor ${id}`,
-          data: [motor[key]],
-          borderColor: getRandomColor(),
-          fill: false,
-        });
-      }
-    });
+    // Object.entries(state).forEach(([id, motor]) => {
+    //   if (!updatedDatasets.some((d) => d.label === `Motor ${id}`)) {
+    //     updatedDatasets.push({
+    //       label: `Motor ${id}`,
+    //       data: [motor[key]],
+    //       borderColor: getRandomColor(),
+    //       fill: false,
+    //     });
+    //   }
+    // });
 
     return updatedDatasets;
   }
@@ -113,8 +116,8 @@
       </tr>
     </thead>
     <tbody>
-      {#if $latestMotorStateStore !== null}
-        {#each Object.entries($latestMotorStateStore) as [id, motor] (id)}
+      {#if currentMotorState.length > 0}
+        {#each Object.entries(currentMotorState) as [id, motor] (id)}
           <tr>
             <td>{id}</td>
             <td>{motor.position}</td>
@@ -130,7 +133,7 @@
     </tbody>
   </table>
 
-  <Chart
+  <!-- <Chart
     chartTitle="Position"
     labels={positionLabels}
     datasets={positionDatasets}
@@ -147,7 +150,7 @@
     labels={torqueLabels}
     datasets={torqueDatasets}
     yUnit={chartConfig.yUnits.torque}
-  />
+  /> -->
 </div>
 
 <style>

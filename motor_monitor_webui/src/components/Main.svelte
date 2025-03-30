@@ -1,7 +1,7 @@
 <script lang="ts">
   // components
   import Status from "./Status.svelte";
-  import State from "./State.svelte";
+  import State from "./CurrentState.svelte";
   import Sidebar from "./Sidebar.svelte";
   import Operation from "./Operation.svelte";
   import Notify from "./Notify.svelte";
@@ -23,7 +23,7 @@
 
     <main class="main">
       <Operation />
-      <!-- <State /> -->
+      <State />
     </main>
   </div>
 

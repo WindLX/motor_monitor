@@ -17,7 +17,7 @@ from model.net import (
 from service.udp import UDPNode
 from service.config import load_config
 
-config = load_config("./config/config.toml")
+config = load_config("./config/backend.toml")
 
 udp_node = UDPNode(
     config.udp_node.host,

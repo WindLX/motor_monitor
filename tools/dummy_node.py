@@ -62,7 +62,7 @@ class DummyNode:
 
 
 async def main():
-    config = load_config("./config/config.toml")
+    config = load_config("./config/backend.toml")
     loop = asyncio.get_running_loop()
     listen = loop.create_datagram_endpoint(
         DummyNode,

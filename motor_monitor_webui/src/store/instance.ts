@@ -27,5 +27,5 @@ export function resetAPI() {
 }
 
 export const messageManager = writable<MotorNetMessageManager>(
-  new MotorNetMessageManager(motor_net_message_manager.maxMessageQueueLength)
+  new MotorNetMessageManager(motor_net_message_manager.max_message_queue_length)
 );

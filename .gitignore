@@ -14,5 +14,7 @@ wheels/
 .venv
 
 # config file
+config/*.toml
+assets/*.json
 config.toml
 config.json

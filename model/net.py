@@ -1,7 +1,7 @@
 from datetime import datetime
 import uuid
 
-from pydantic import BaseModel
+from pydantic import BaseModel, conint
 
 from model.base import (
     MotorMessageTypeEnum,
@@ -18,7 +18,7 @@ from model.base import (
 class MotorNetMessageControlCommand(BaseModel):
     id: str
     timestamp: float
-    message_type: MotorMessageTypeEnum
+    message_type: conint(ge=0, le=255)  # type: ignore
     payload: CC_Payload = None
 
     @staticmethod
@@ -44,7 +44,7 @@ class MotorNetMessageControlCommand(BaseModel):
     @staticmethod
     def from_base_model(message: MotorMessage) -> "MotorNetMessageControlCommand":
         return MotorNetMessageControlCommand(
-            id=message.id,
+            id=str(message.id),
             timestamp=message.timestamp,
             message_type=message.message_type,
             payload=message.payload,
@@ -122,7 +122,7 @@ class MotorNetMessageControlCommand(BaseModel):
 class MotorNetMessageQueryStatus(BaseModel):
     id: str
     timestamp: float
-    message_type: MotorMessageTypeEnum
+    message_type: conint(ge=0, le=255)  # type: ignore
     payload: QS_Payload
 
     @staticmethod
@@ -148,7 +148,7 @@ class MotorNetMessageQueryStatus(BaseModel):
     @staticmethod
     def from_base_model(message: MotorMessage) -> "MotorNetMessageQueryStatus":
         return MotorNetMessageQueryStatus(
-            id=message.id,
+            id=str(message.id),
             timestamp=message.timestamp,
             message_type=message.message_type,
             payload=message.payload,
